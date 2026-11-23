@@ -86,7 +86,7 @@ const number = new Intl.NumberFormat('en-GB');
               </div>
               {verified ? (
                 <p class="platform-count">
-                  {number.format(record.count ?? 0)} <span class="platform-metric">{platform.metric}</span>
+                  {number.format(record.count ?? 0)} <span class="platform-metric">{record.count === 1 ? platform.metricSingular : platform.metric}</span>
                 </p>
               ) : (
                 <p class="platform-count platform-count--awaiting">Awaiting verification</p>

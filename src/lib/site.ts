@@ -12,8 +12,9 @@ export interface Platform {
   id: PlatformId;
   name: string;
   handle: string;
-  /** What a "follow" is called on this platform. */
+  /** What a "follow" is called on this platform (plural, and singular for a count of 1). */
   metric: string;
+  metricSingular: string;
   profileUrl: string;
   /** Where the videos live on this platform. */
   videosUrl: string;
@@ -26,6 +27,7 @@ export const PLATFORMS: readonly Platform[] = [
     name: 'YouTube',
     handle: '@zaunited1',
     metric: 'subscribers',
+    metricSingular: 'subscriber',
     profileUrl: 'https://www.youtube.com/@zaunited1',
     videosUrl: 'https://www.youtube.com/@zaunited1/videos',
   },
@@ -34,6 +36,7 @@ export const PLATFORMS: readonly Platform[] = [
     name: 'TikTok',
     handle: '@zaunited_',
     metric: 'followers',
+    metricSingular: 'follower',
     profileUrl: 'https://www.tiktok.com/@zaunited_',
     videosUrl: 'https://www.tiktok.com/@zaunited_',
   },
@@ -42,6 +45,7 @@ export const PLATFORMS: readonly Platform[] = [
     name: 'Instagram',
     handle: '@zaunited',
     metric: 'followers',
+    metricSingular: 'follower',
     profileUrl: 'https://www.instagram.com/zaunited/',
     videosUrl: 'https://www.instagram.com/zaunited/reels/',
   },

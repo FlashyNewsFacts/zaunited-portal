@@ -35,8 +35,34 @@ test('the committed data contains no invented follower counts', () => {
   }
 });
 
+test('the verified baseline (23 Nov 2026) shows 9 follows, The First Zaunite unlocked and 9/10 to the next', () => {
+  const data = load();
+  assert.deepEqual(
+    Object.fromEntries(Object.entries(data.population).map(([id, p]) => [id, [p.count, p.verifiedOn, p.source]])),
+    {
+      youtube: [6, '2026-11-23', 'YouTube Studio'],
+      tiktok: [2, '2026-11-23', 'TikTok profile'],
+      instagram: [1, '2026-11-23', 'Instagram profile'],
+    },
+  );
+  const view = deriveKingdom(data);
+  assert.equal(view.combined, 9);
+  assert.equal(view.lastVerifiedOn, '2026-11-23');
+  assert.deepEqual(view.awaitingPlatforms, []);
+  assert.deepEqual(
+    view.milestones.map((m) => [m.population, m.state]),
+    [[1, 'unlocked'], [10, 'next'], [25, 'locked'], [50, 'locked'], [100, 'locked']],
+  );
+  assert.equal(view.milestones[0].unlockedOn, '2026-11-23');
+  assert.equal(view.nextMilestone?.title, 'A Small Settlement');
+  assert.equal(view.progressPercent, 90);
+  assert.equal(view.storyDaysRemaining, 30);
+});
+
 test('with nothing verified, the kingdom awaits verification and the Hollowing shows 30 days', () => {
-  const view = deriveKingdom(load());
+  const data = withCounts(load(), null, null, null);
+  for (const m of data.milestones) m.unlockedOn = null;
+  const view = deriveKingdom(data);
   assert.equal(view.combined, 0);
   assert.equal(view.verifiedPlatforms.length, 0);
   assert.equal(view.lastVerifiedOn, null);
@@ -84,7 +110,8 @@ test('milestones stay unlocked when follower counts drop', () => {
 });
 
 test('a milestone cannot unlock before a smaller one', () => {
-  const data = load();
+  const data = withCounts(load(), null, null, null);
+  data.milestones[0].unlockedOn = null;
   data.milestones[1].unlockedOn = '2026-11-10';
   assert.ok(errorsFor(data).some((e) => e.includes('smaller milestone')));
 });

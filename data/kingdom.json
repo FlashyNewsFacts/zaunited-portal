@@ -3,19 +3,19 @@
 
   "population": {
     "youtube": {
-      "count": null,
-      "verifiedOn": null,
-      "source": null
+      "count": 6,
+      "verifiedOn": "2026-11-23",
+      "source": "YouTube Studio"
     },
     "tiktok": {
-      "count": null,
-      "verifiedOn": null,
-      "source": null
+      "count": 2,
+      "verifiedOn": "2026-11-23",
+      "source": "TikTok profile"
     },
     "instagram": {
-      "count": null,
-      "verifiedOn": null,
-      "source": null
+      "count": 1,
+      "verifiedOn": "2026-11-23",
+      "source": "Instagram profile"
     }
   },
 
@@ -24,7 +24,7 @@
       "population": 1,
       "title": "The First Zaunite",
       "description": "One brave soul answers King Mesmer's call. The kingdom is no longer empty.",
-      "unlockedOn": null
+      "unlockedOn": "2026-11-23"
     },
     {
       "population": 10,
