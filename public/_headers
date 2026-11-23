@@ -1,4 +1,4 @@
-# Security headers for Cloudflare static assets (applied once deployed).
+# Security headers for Cloudflare Pages (applied once deployed).
 # The MVP ships no JavaScript, so scripts are blocked entirely.
 /*
   Content-Security-Policy: default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
