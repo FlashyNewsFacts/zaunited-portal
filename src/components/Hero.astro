@@ -1,16 +1,63 @@
 ---
-import KingdomScene from './KingdomScene.astro';
+/**
+ * Hero: the official ZAUNITED banner (src/assets/brand/zaunited-banner.png).
+ * The artwork is only cropped and resized, never altered:
+ *  - phones and tablets in portrait: centre 3:2 crop (Mesmer, title, laurels, motto)
+ *  - wider screens: the whole banner, uncropped
+ * The banner already shows the title and motto, so the text versions are kept
+ * for screen readers and search engines but are not shown twice.
+ */
+import { getImage } from 'astro:assets';
+import banner from '../assets/brand/zaunited-banner.png';
 import { SITE } from '../lib/site.ts';
+
+const WIDE_MEDIA = '(min-width: 900px)';
+const MOBILE_RATIO = 3 / 2;
+const MOBILE_WIDTHS = [640, 960, Math.round(banner.height * MOBILE_RATIO)];
+const WIDE_WIDTHS = [1200, 1600, banner.width];
+const QUALITY = { avif: 55, webp: 78, jpeg: 80 } as const;
+
+type Format = keyof typeof QUALITY;
+
+async function srcset(widths: number[], format: Format, ratio?: number): Promise<string> {
+  const images = await Promise.all(
+    widths.map((width) =>
+      getImage({
+        src: banner,
+        width,
+        ...(ratio ? { height: Math.round(width / ratio), fit: 'cover' as const, position: 'center' } : {}),
+        format,
+        quality: QUALITY[format],
+      }),
+    ),
+  );
+  return images.map((img, i) => `${img.src} ${widths[i]}w`).join(', ');
+}
+
+const wideAvif = await srcset(WIDE_WIDTHS, 'avif');
+const wideWebp = await srcset(WIDE_WIDTHS, 'webp');
+const mobileAvif = await srcset(MOBILE_WIDTHS, 'avif', MOBILE_RATIO);
+const mobileWebp = await srcset(MOBILE_WIDTHS, 'webp', MOBILE_RATIO);
+const fallback = await getImage({
+  src: banner,
+  width: 960,
+  height: 640,
+  fit: 'cover',
+  position: 'center',
+  format: 'jpeg',
+  quality: QUALITY.jpeg,
+});
+
+const alt =
+  'ZAUNITED: The Kingdom of Zaun. From nothing, we shall rise. King Mesmer, crowned and in a red cloak, ' +
+  'raises a glowing sword among cheering Zaunites beneath a full moon and a castle on a hill, while the ' +
+  'glowing purple eyes of the Hollowing loom in the sky.';
 ---
 
 <header class="hero">
-  <div class="hero-scene">
-    <KingdomScene />
-  </div>
-
   <nav class="topbar container" aria-label="Main">
     <a class="crest" href="/">
-      <img src="/favicon.svg" alt="" width="32" height="32" />
+      <img src="/crest-96.webp" alt="" width="32" height="32" />
       <span>Zaunited</span>
     </a>
     <ul class="nav-links">
@@ -22,10 +69,29 @@ import { SITE } from '../lib/site.ts';
     <a class="btn btn--ghost topbar-join" href="#join">Join</a>
   </nav>
 
+  <div class="hero-banner">
+    <picture>
+      <source media={WIDE_MEDIA} type="image/avif" srcset={wideAvif} sizes="(min-width: 2172px) 2172px, 100vw" />
+      <source media={WIDE_MEDIA} type="image/webp" srcset={wideWebp} sizes="(min-width: 2172px) 2172px, 100vw" />
+      <source type="image/avif" srcset={mobileAvif} sizes="100vw" />
+      <source type="image/webp" srcset={mobileWebp} sizes="100vw" />
+      <img
+        src={fallback.src}
+        width="960"
+        height="640"
+        alt={alt}
+        fetchpriority="high"
+        decoding="async"
+      />
+    </picture>
+  </div>
+
   <div class="hero-copy container">
-    <p class="eyebrow">The Kingdom of Zaun</p>
-    <h1 class="hero-title">Zaunited</h1>
-    <p class="motto">{SITE.motto}</p>
+    <div class="visually-hidden">
+      <p>The Kingdom of Zaun</p>
+      <h1>Zaunited</h1>
+      <p>{SITE.motto}</p>
+    </div>
     <p class="hero-lead">
       A fallen king. A ruined kingdom. A darkness drawing near. King Mesmer must rebuild Zaun before{' '}
       <strong>the Hollowing</strong> arrives, and every new Zaunite helps the kingdom rise.
@@ -42,21 +108,18 @@ import { SITE } from '../lib/site.ts';
     position: relative;
     display: flex;
     flex-direction: column;
-    isolation: isolate;
     background:
       radial-gradient(90% 70% at 70% 20%, rgba(107, 69, 176, 0.35), transparent 70%),
       linear-gradient(180deg, #0e0a24 0%, #1a1240 55%, #0b0918 100%);
   }
 
   .topbar {
-    position: relative;
-    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
     padding-top: max(16px, env(safe-area-inset-top));
-    padding-bottom: 8px;
+    padding-bottom: 12px;
   }
 
   .crest {
@@ -69,6 +132,11 @@ import { SITE } from '../lib/site.ts';
     text-transform: uppercase;
     text-decoration: none;
     color: var(--text);
+  }
+
+  .crest img {
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px var(--border);
   }
 
   .nav-links {
@@ -98,33 +166,29 @@ import { SITE } from '../lib/site.ts';
     font-size: 0.8rem;
   }
 
+  .hero-banner {
+    width: 100%;
+    max-width: 2172px;
+    margin-inline: auto;
+    background: var(--bg-deep);
+    border-block: 1px solid var(--border);
+    box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.9);
+  }
+
+  .hero-banner img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
   .hero-copy {
-    position: relative;
-    z-index: 1;
     display: grid;
     gap: 14px;
     justify-items: center;
     text-align: center;
-    padding-top: clamp(28px, 7vw, 64px);
-  }
-
-  .hero-title {
-    font-size: clamp(3rem, 15vw, 6.5rem);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    line-height: 1;
-    background: linear-gradient(180deg, var(--gold-bright) 10%, var(--gold) 50%, var(--gold-deep) 95%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    filter: drop-shadow(0 4px 18px rgba(240, 200, 106, 0.25));
-  }
-
-  .motto {
-    font-family: var(--font-display);
-    font-size: clamp(1.05rem, 4.2vw, 1.5rem);
-    color: var(--text);
-    letter-spacing: 0.06em;
+    padding-block: clamp(24px, 5vw, 40px) clamp(40px, 7vw, 64px);
   }
 
   .hero-lead {
@@ -142,66 +206,22 @@ import { SITE } from '../lib/site.ts';
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
-    margin-top: 8px;
-  }
-
-  /* Phone & tablet portrait: text first, scene below */
-  .hero-scene {
-    order: 3;
-    position: relative;
-    height: clamp(300px, 78vw, 560px);
-    margin-top: -24px;
-    z-index: 0;
-    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 30%);
-    mask-image: linear-gradient(180deg, transparent 0, #000 30%);
+    margin-top: 4px;
   }
 
   @media (min-width: 900px) {
-    .hero {
-      min-height: min(92vh, 860px);
-    }
-
-    /* Shift the scene right so Mesmer stands beside the text, not behind it */
-    .hero-scene {
-      position: absolute;
-      inset: 0 0 0 24%;
-      height: auto;
-      margin: 0;
-      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22%);
-      mask-image: linear-gradient(90deg, transparent 0, #000 22%);
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      background: radial-gradient(60% 70% at 0% 60%, rgba(3, 2, 8, 0.85), transparent 70%);
-      pointer-events: none;
-    }
-
     .nav-links {
       display: flex;
     }
 
-    .hero-copy {
-      justify-items: start;
-      text-align: left;
-      max-width: var(--content);
-      padding-top: clamp(48px, 8vh, 96px);
-      padding-bottom: 120px;
+    .hero-banner img {
+      aspect-ratio: 2172 / 724;
     }
 
-    .hero-copy > * {
-      max-width: 30rem;
-    }
-
-    .hero-copy > .hero-title {
-      max-width: none;
-    }
-
-    .hero-actions {
-      justify-content: flex-start;
+    @media (min-width: 2172px) {
+      .hero-banner {
+        border-inline: 1px solid var(--border);
+      }
     }
   }
 </style>
