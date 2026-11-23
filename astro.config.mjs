@@ -4,8 +4,8 @@ import { defineConfig } from 'astro/config';
 // The portal is a fully static site for the MVP (M1): no server code,
 // no database and no secrets. Everything is rebuilt from data/kingdom.json.
 export default defineConfig({
-  // The public address (e.g. https://kingdom.zaunited.workers.dev), set as the
-  // SITE_URL build variable in Cloudflare. It switches on link-preview tags.
+  // The public address (e.g. https://zaunited.pages.dev), set as the SITE_URL
+  // environment variable in Cloudflare Pages. It switches on link-preview tags.
   site: process.env.SITE_URL || undefined,
   output: 'static',
   build: {

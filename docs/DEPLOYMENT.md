@@ -1,134 +1,131 @@
-# Deployment: free Cloudflare workers.dev address
+# Deployment: free Cloudflare Pages (`zaunited.pages.dev`)
 
-> **Status: not deployed.** Nothing in this repository is connected to
-> Cloudflare yet. Launching needs explicit approval from the ZAUNITED owner.
+> **Status: not deployed.** Launching needs explicit approval from the
+> ZAUNITED owner. The first successful Pages build **is** the launch.
 
-**Decision (23 Nov 2026):** the portal launches on Cloudflare's **free
-`workers.dev` address**. No domain is purchased for this launch.
+**Decisions:**
+- **23 Nov 2026:** free hosting, no purchased domain.
+- **24 Nov 2026:** Cloudflare Pages instead of Workers Builds, whose build token failed at the account level.
 
 | Setting | Value |
 | --- | --- |
-| Public address | `https://kingdom.<your-subdomain>.workers.dev`. We suggest the account subdomain **`zaunited`**, giving **`https://kingdom.zaunited.workers.dev`** |
+| Public address | **`https://zaunited.pages.dev`** (if the name is free; see Step 3) |
 | Who can see it | Everyone; no login or registration |
-| Preview links | Off |
+| Production branch | `main`. Every merge into `main` goes live in about a minute |
+| Preview deployments | **Off** |
 | Repository | Stays **private** |
-| Cost | £0 (Workers Free plan) |
+| Cost | £0 |
 
-The deployment settings live in [`wrangler.jsonc`](../wrangler.jsonc):
-the Worker name is `kingdom`, it serves the built site from `dist/`, the
-production `workers.dev` address is on, and preview URLs are off.
+No configuration file is needed in the repository: Pages reads its settings
+from the dashboard. The site is plain static files (`npm run build` → `dist/`).
+`public/_headers` adds the security headers, and `404.html` is served for
+unknown addresses.
 
 ---
 
-## Before deployment: settings to check
+## Before you start
+
+### Remove the old Workers connection (important)
+The `kingdom` Worker created earlier is still connected to this repository.
+It hasn't published anything, but remove it so only Pages deploys:
+
+1. **dash.cloudflare.com → Compute (Workers) → Workers & Pages → `kingdom`**.
+2. **Settings → (scroll to the bottom) → Delete** and confirm.
+   *Alternative:* **Settings → Build → Disconnect** if you'd rather keep the Worker.
+3. Optional: **My Profile → API Tokens**, and delete the unused "Workers Builds" tokens.
 
 ### GitHub (github.com in Safari)
-
-- [ ] **Two-factor authentication** on your GitHub account
-      (profile picture → Settings → Password and authentication).
-- [ ] The repository stays **Private** (repository → Settings → General → Danger Zone; don't change it).
-- [ ] **Dependabot alerts** on (repository → Settings → Code security → Dependabot alerts → Enable).
-- [ ] **Protect `main`** (repository → Settings → Branches or Rules → add a rule for `main`):
-      require a pull request, require the status check
-      **"Validate data, test, type-check and build"**, and block force pushes.
-      *If GitHub says this needs an upgrade:* rules on **private** repositories
-      need a paid GitHub plan. Skip it, and keep the habit of changing `main`
-      only through reviewed pull requests.
-- Private vulnerability reporting only works on public repositories; leave it until the code is made public.
+- [ ] **Two-factor authentication** on your GitHub account.
+- [ ] Repository stays **Private**.
+- [ ] **Dependabot alerts** on (Settings → Code security).
+- [ ] Optional: **protect `main`** (Settings → Branches/Rules). On private
+      repositories this needs a paid GitHub plan; if offered an upgrade, skip it.
 
 ### Cloudflare
-
-- [ ] A free Cloudflare account with **two-factor authentication** on.
-- [ ] The Cloudflare GitHub app is allowed to see **only** `zaunited-portal`.
-- [ ] Builds for **non-production branches are off** (only `main` deploys).
-- [ ] **Preview URLs off** (already set in `wrangler.jsonc`).
-- [ ] The production **workers.dev address on**, and **no Cloudflare Access/login** on it.
+- [ ] Two-factor authentication on (My Profile → Authentication).
 
 ---
 
 ## Step-by-step on iPad (Safari)
 
 Cloudflare occasionally renames menu items. If a label differs slightly,
-look for the nearest match.
+look for the nearest match. Tap ☰ (top left) to open the menu on iPad.
 
-**Order:** finish the GitHub checklist → approve and merge PR #1 → then
-connect Cloudflare (Steps 1–6). The first build after Step 4 **is the launch**:
-the site becomes public at the workers.dev address.
+### Step 1: Start a Pages project
+1. Go to **dash.cloudflare.com** and sign in.
+2. Open **Compute (Workers) → Workers & Pages**.
+3. Tap **Create** (or **Create application**), then choose the **Pages** tab.
+   Don't use the Workers "Import a repository" option.
+4. Tap **Connect to Git** (or **Import an existing Git repository**) → **Get started**.
 
-### Step 1: Create and secure the Cloudflare account
-1. Go to **dash.cloudflare.com** and sign up with the ZAUNITED email.
-2. Choose the **Free** plan if asked. No card is needed for Workers Free.
-3. Open your profile icon → **My Profile → Authentication** and turn on
-   **two-factor authentication** (an authenticator app is best).
+### Step 2: Connect GitHub (private repository)
+1. Choose **GitHub** → **Connect GitHub** (or **Add account**).
+2. GitHub opens. Install the **Cloudflare Workers and Pages** app on your account.
+3. Choose **Only select repositories → `FlashyNewsFacts/zaunited-portal`** →
+   **Install & Authorise**. Your repository stays private; only Cloudflare can read it.
+4. Back in Cloudflare, select **`zaunited-portal`** → **Begin setup**.
 
-### Step 2: Choose the free workers.dev subdomain
-1. In the left menu (tap ☰ on iPad), open **Compute (Workers) → Workers & Pages**.
-2. Cloudflare asks you to pick your **workers.dev subdomain** (or find it
-   under **Account details / Subdomain** on that page).
-3. Enter **`zaunited`**. If it's taken, try `kingdomofzaun` or `zaunited-kingdom`.
-   The site address will be `https://kingdom.<subdomain>.workers.dev`.
-
-### Step 3: Connect the GitHub repository
-1. **Workers & Pages → Create → Import a repository** (it may say "Connect to Git").
-2. Choose **GitHub** and sign in.
-3. When GitHub asks which repositories Cloudflare may access, choose
-   **Only select repositories → `FlashyNewsFacts/zaunited-portal`**, then **Install & Authorise**.
-4. Select `zaunited-portal`.
-
-### Step 4: Build settings
+### Step 3: Set up builds and deployments
 Enter exactly:
 
 | Field | Value |
 | --- | --- |
-| Project / Worker name | `kingdom` (must match `wrangler.jsonc`) |
+| Project name | **`zaunited`** (this becomes `zaunited.pages.dev`) |
 | Production branch | `main` |
+| Framework preset | **Astro** |
 | Build command | `npm run build` |
-| Deploy command | `npx wrangler deploy` |
-| Root directory | leave blank (or `/`) |
-| Non-production branch builds | **Off** / unticked |
+| Build output directory | `dist` |
+| Root directory (advanced) | leave blank |
 
-Open **Advanced settings → Build variables** and add:
+Under **Environment variables (advanced)**, add:
 
-| Variable | Value |
+| Variable name | Value |
 | --- | --- |
 | `NODE_VERSION` | `22.23.5` |
-| `SITE_URL` | `https://kingdom.zaunited.workers.dev` (use your real subdomain) |
+| `SITE_URL` | `https://zaunited.pages.dev` |
 
-`SITE_URL` turns on the link-preview image when the site is shared. Neither value is secret.
+**If the name `zaunited` is taken,** Cloudflare shows a different address
+(e.g. `zaunited-abc.pages.dev`) on the next screen. Then set `SITE_URL` to
+that exact address (Settings → Variables and Secrets) and redeploy, or ask Claude.
 
-Tap **Save and Deploy**. The build takes about a minute.
+Tap **Save and Deploy**. The build takes 1–2 minutes. **When it finishes, the
+site is public.**
 
-### Step 5: Check the Worker's settings
-Open the `kingdom` Worker → **Settings → Domains & Routes**:
-- **workers.dev:** **Enabled** (this is the public site).
-- **Preview URLs:** **Disabled**.
-- Do **not** turn on Cloudflare Access ("Protect with Access") for the
-  workers.dev route. That would make visitors log in.
+### Step 4: Turn off preview deployments
+1. Open the **`zaunited`** project → **Settings → Build** (or **Builds & deployments**).
+2. Find **Branch control**: keep the production branch **`main`** with
+   automatic deployments **enabled**.
+3. Set **Preview branch** to **None** and **Save**.
 
-Then **Settings → Build**: confirm only `main` builds, and that
-non-production branch builds are off.
+Pages also gives each production deployment its own extra address
+(`<id>.zaunited.pages.dev`). These show the same public site and can be ignored.
 
-### Step 6: Check the live site
-1. Open the address in Safari **and in a Private tab** (so you see it as a visitor would, with no login).
-2. Check the banner, the population (**9**), The First Zaunite unlocked,
-   **30 STORY DAYS REMAIN**, and tap every YouTube, TikTok and Instagram button.
-3. On iPhone: **Share → Add to Home Screen** should show the ZAUNITED badge.
-4. Tell Claude the final address. Claude can check the security headers
-   and the link preview.
+### Step 5: Check the live site
+1. Open **https://zaunited.pages.dev** in a **Private** tab (to see it as a visitor would).
+2. Check:
+   - the banner and the Hollowing artwork
+   - **9** Combined Platform Follows
+   - The First Zaunite unlocked ("Unlock recorded 23 November 2026")
+   - **30 STORY DAYS REMAIN**
+   - every YouTube, TikTok and Instagram button works
+3. Try `https://zaunited.pages.dev/test`. You should see "Lost in the mist".
+4. On iPhone: **Share → Add to Home Screen** should show the ZAUNITED badge.
+5. Tell Claude it's live, so Claude can check the security headers and link preview.
 
-Then put the address in your TikTok, YouTube and Instagram bios.
+Then add the address to your TikTok, YouTube and Instagram bios.
 
 ---
 
-## Updating the live site afterwards
+## After launch
 
-Every change merged into `main` (for example a census update; see
-[UPDATING-THE-KINGDOM.md](UPDATING-THE-KINGDOM.md)) rebuilds and goes live
-automatically in about a minute. If a change fails the checks, the build
-stops and the site keeps its last good version.
-
-**To take the site offline quickly:** Worker → Settings → Domains & Routes →
-workers.dev → **Disable**.
+- **Updates:** anything merged into `main` (e.g. a census update; see
+  [UPDATING-THE-KINGDOM.md](UPDATING-THE-KINGDOM.md)) rebuilds and goes live
+  automatically. If a change fails the checks, the build stops and the site
+  keeps its last good version.
+- **Undo a bad update:** project → **Deployments** → choose an earlier
+  deployment → **⋯ → Rollback to this deployment**.
+- **Take the site offline:** project → **Settings → Delete project**. This removes
+  the site; the repository is untouched, and the site can be recreated with the steps above.
 
 ## Who has access to what
 
@@ -139,47 +136,29 @@ workers.dev → **Disable**.
 | Deployments and settings | You | Cloudflare account + 2FA; GitHub app limited to one repository |
 | Secrets | None exist | The site needs no API keys or passwords |
 
-## Free-tier limits (checked 23 November 2026)
+Only files from the build output (`dist/`) are published. Source code, the
+original artwork files, `data/kingdom.json` and documentation are never
+served: unknown addresses return the 404 page.
 
-| Item | Free plan | Notes |
+## Free-plan limits (checked 24 November 2026)
+
+| Item | Pages Free | This site |
 | --- | --- | --- |
-| Static asset requests | Free and unlimited | The whole portal is static, so normal visits don't use the Worker request quota |
-| Worker requests | 100,000 per day | Only relevant if server features (M2+) are added; resets at midnight UTC |
-| Static files per version | 20,000 | The portal uses about 25 |
-| Max file size | 25 MiB | The largest file is about 0.3 MB |
-| Workers Builds minutes | 3,000 per month | A build takes about a minute |
+| Static requests and bandwidth | Unlimited | |
+| Builds | 500 per month | One per merge into `main` |
 | Concurrent builds | 1 | |
-| Build timeout | 20 minutes | |
+| Build timeout | 20 minutes | About 1 minute |
+| Files per site | 20,000 | About 40 |
+| Max file size | 25 MiB | Largest about 0.3 MB |
 
-**What could cost money later:** nothing for this static launch. Server
-features (M2+) going past 100,000 requests a day would need the $5/month
-Workers Paid plan.
-
-### Preview URLs
-
-Preview URLs follow the Worker's `workers.dev` setting by default (Wrangler
-4.44+), so with `workers.dev` on they would also be on. `wrangler.jsonc`
-therefore sets `"preview_urls": false` explicitly. If the dashboard toggle
-is changed without updating the file, the next deploy resets it to the
-file's value.
-
-### Security headers
-
-`public/_headers` sets the Content-Security-Policy (all scripts blocked),
-`X-Frame-Options`, `Referrer-Policy` and long-term caching for
-fingerprinted files. Confirm them after launch, e.g.
-`curl -I https://kingdom.zaunited.workers.dev/`.
+Nothing on this plan costs money for the current static site.
 
 ### Sources
-
-- Workers limits: <https://developers.cloudflare.com/workers/platform/limits/>
-- Static assets billing and limitations: <https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/>
-- Workers pricing: <https://developers.cloudflare.com/workers/platform/pricing/>
-- Workers Builds limits and pricing: <https://developers.cloudflare.com/workers/ci-cd/builds/limits-and-pricing/>
-- Workers Builds overview: <https://developers.cloudflare.com/workers/ci-cd/builds/>
-- workers.dev routing: <https://developers.cloudflare.com/workers/configuration/routing/workers-dev/>
-- Preview URLs: <https://developers.cloudflare.com/workers/versions-and-deployments/preview-urls/>
+- Pages limits: <https://developers.cloudflare.com/pages/platform/limits/>
+- Serving Pages (404 handling): <https://developers.cloudflare.com/pages/configuration/serving-pages/>
+- Pages and Wrangler configuration: <https://developers.cloudflare.com/pages/functions/wrangler-configuration/>
+- Workers Builds stale-token issue: <https://developers.cloudflare.com/workers/ci-cd/builds/troubleshoot/>
 
 These figures were taken from search summaries of the pages above; the pages
 themselves couldn't be opened from the build environment. Re-check them in
-the Cloudflare dashboard before deploying.
+the dashboard if anything looks different.
