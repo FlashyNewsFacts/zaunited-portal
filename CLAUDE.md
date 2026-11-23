@@ -13,6 +13,7 @@ Public, mobile-first fantasy kingdom site for ZAUNITED (Astro, static output).
 - The Hollowing is story time: it only advances via recorded `story.storyDays`. Prophecy = Day 0; historical Episode 1 does not count.
 - Keep the portal independent of StoryForge: no private code, assets, unpublished scripts or credentials.
 - No secrets in source control. Don't deploy, buy domains, connect services or change repo visibility without owner approval.
+- Launch target is the free Cloudflare `workers.dev` address (`wrangler.jsonc`: preview URLs off). No domain purchase. See `docs/DEPLOYMENT.md`.
 - Coming-soon features (suggestions, Royal Council) must not appear to work until they are built and approved.
 
 ## Commands

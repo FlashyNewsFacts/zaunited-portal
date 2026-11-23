@@ -29,7 +29,7 @@ const ogImage = Astro.site ? new URL('/og-image.jpg', Astro.site).href : undefin
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content={SITE.name} />
     {
-      /* Share previews need absolute URLs, so they switch on once `site` (the final domain) is set. */
+      /* Share previews need absolute URLs, so they switch on once `site` (the SITE_URL build variable) is set. */
       ogImage && (
         <>
           <meta property="og:url" content={canonical} />
