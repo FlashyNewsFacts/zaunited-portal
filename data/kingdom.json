@@ -56,12 +56,12 @@
     "hollowingTotalDays": 30,
     "prophecy": {
       "title": "The Prophecy of Zaun",
-      "summary": "The opening prophecy foretells the Hollowing. It is Day 0: the countdown starts here."
+      "summary": "The frozen Day 0 opening promo. The Hollowing begins here, with 30 story days remaining."
     },
     "historicalEpisodes": [
       {
         "title": "Episode 1",
-        "summary": "Part of ZAUNITED's earlier story. Preserved as it was released; it does not change the Hollowing countdown."
+        "summary": "Preserved exactly as it was released. It does not advance the Hollowing countdown."
       }
     ],
     "storyDays": []

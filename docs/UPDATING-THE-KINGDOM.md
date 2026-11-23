@@ -105,8 +105,10 @@ the previous `}`), with a population higher than the last one and
 The countdown is **story time**: it only moves when you record a story-day
 episode that has **already been published**. Nothing changes at midnight.
 
-- The **Prophecy of Zaun is Day 0**. It is not listed in `storyDays`.
-- **Historical Episode 1** is kept separately and does **not** change the countdown.
+- The **Prophecy of Zaun is the frozen Day 0 opening promo**. It is not listed in `storyDays`.
+- The Hollowing begins at **30 story days remaining**.
+- **Historical Episode 1** is kept separately and does **not** advance the countdown.
+- Only a **verified, officially published** story-day episode advances the countdown.
 - `storyDays` starts empty: `"storyDays": []` → **30 story days remain**.
 
 To record Day 1, change `"storyDays": []` to:

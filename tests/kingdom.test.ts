@@ -112,6 +112,31 @@ test('the Hollowing only advances for recorded story days', () => {
   assert.equal(deriveKingdom(data).storyDaysRemaining, 28);
 });
 
+test('canon: the launch state is Day 0 with 30 story days remaining', () => {
+  const data = load();
+  assert.equal(data.story.hollowingTotalDays, 30);
+  assert.deepEqual(data.story.storyDays, [], 'no story-day episode is recorded before launch');
+  assert.equal(deriveKingdom(data).storyDaysRemaining, 30);
+});
+
+test('canon: historical episodes never advance the countdown', () => {
+  const data = load();
+  data.story.historicalEpisodes.push({ title: 'Another historical episode', summary: 'Kept as released.' });
+  assert.deepEqual(errorsFor(data), []);
+  assert.equal(deriveKingdom(data).storyDaysRemaining, 30);
+});
+
+test('canon: combined follows add all three platforms, and milestones follow that total', () => {
+  const data = withCounts(load(), 20, 20, 10);
+  for (const m of data.milestones.slice(0, 4)) m.unlockedOn = '2026-11-20';
+  assert.deepEqual(errorsFor(data), []);
+  const view = deriveKingdom(data);
+  assert.equal(view.combined, 50);
+  assert.equal(view.latestUnlocked?.title, 'Defences of Zaun');
+  assert.equal(view.nextMilestone?.title, 'First Target: 100 Zaunites');
+  assert.equal(view.progressPercent, 50);
+});
+
 test('story days must start at Day 1 and be recorded in order', () => {
   const data = load();
   data.story.storyDays = [

@@ -26,6 +26,38 @@ code, database or secrets.
    them with Cloudflare Access, until launch is approved (see below).
 5. When approved, attach the custom domain (e.g. `zaunited.com`) and enable it.
 
+## Manual configuration checklist (owner, when deployment is approved)
+
+**Cloudflare dashboard**
+- [ ] Account secured with 2-factor authentication.
+- [ ] Workers Builds connected to **only** the `zaunited-portal` repository.
+- [ ] Build command `npm run build`; production branch `main`; root directory `/`.
+- [ ] Node version: the repository pins `22.23.5` in `.nvmrc`. If the build log
+      shows an older Node, add the build variable `NODE_VERSION=22.23.5`
+      (Astro needs 22.23.4 or newer).
+- [ ] **Preview URLs disabled** (Settings → Domains & Routes), and builds for
+      non-production branches switched off, until previews are approved or protected with Cloudflare Access.
+- [ ] `workers.dev` address disabled until launch is approved.
+- [ ] Custom domain attached (after purchase approval). HTTPS is automatic.
+- [ ] Leave cookie-setting features such as Bot Fight Mode **off**, or
+      update the footer's "no cookies" privacy statement.
+
+**Repository changes for the deployment pull request**
+- [ ] `wrangler.jsonc` with `"assets": { "directory": "./dist" }`,
+      `"workers_dev": false` and `"preview_urls": false`.
+- [ ] `site: 'https://<final-domain>'` in `astro.config.mjs` (canonical URL and share links).
+- [ ] Share image and icons from `docs/ARTWORK.md`.
+
+**GitHub settings**
+- [ ] Protect `main`: require a pull request, require the
+      "Validate data, test, type-check and build" check, and block force-pushes.
+- [ ] Enable private vulnerability reporting and Dependabot alerts.
+
+**After the first deployment**
+- [ ] Open the site on iPhone and iPad; tap every social button.
+- [ ] Check the security headers (e.g. `curl -I https://<domain>/` shows
+      `content-security-policy`).
+
 `public/_headers` already contains security headers (Content-Security-Policy
 with all scripts blocked, `X-Frame-Options`, `Referrer-Policy`, etc.) and
 long-term caching for fingerprinted assets. Confirm Cloudflare applies them
