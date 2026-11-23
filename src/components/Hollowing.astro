@@ -1,6 +1,10 @@
 ---
 import { formatDate, type KingdomData, type KingdomView } from '../lib/kingdom.ts';
 import { platformById } from '../lib/site.ts';
+import { Picture } from 'astro:assets';
+// Official artwork, approved for this position (crop/resize only, never altered).
+// The countdown itself stays as live text below the image.
+import hollowingArt from '../assets/brand/hollowing-art.png';
 
 interface Props {
   data: KingdomData;
@@ -19,6 +23,18 @@ const pips = Array.from({ length: total }, (_, i) => i + 1);
   <div class="hollow-mist" aria-hidden="true"></div>
   <div class="container hollow-inner">
     <div class="countdown reveal">
+      <figure class="hollow-art">
+        <Picture
+          src={hollowingArt}
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          widths={[480, 800, 1200, 1670]}
+          sizes="(min-width: 960px) 40rem, calc(100vw - 32px)"
+          alt="King Mesmer raises a blazing sword as cheering Zaunites gather around him, while the glowing purple eyes of the Hollowing loom over the castle. A banner reads: Help King Mesmer and the Zaunites fend off the Hollowing!"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
       <p class="eyebrow hollow-eyebrow">A darkness approaches</p>
       <h2 class="hollow-title" id="hollowing-title">
         <span class="hollow-name">The Hollowing</span>
@@ -144,6 +160,24 @@ const pips = Array.from({ length: total }, (_, i) => i + 1);
       grid-template-columns: 1.1fr 1fr;
       align-items: start;
     }
+  }
+
+  .hollow-art {
+    margin: 0 0 6px;
+    width: 100%;
+    max-width: 40rem;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid rgba(139, 92, 246, 0.45);
+    box-shadow:
+      0 0 40px rgba(139, 92, 246, 0.25),
+      var(--shadow);
+  }
+
+  .hollow-art :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 
   .countdown {
