@@ -1,0 +1,20 @@
+name: Bug report
+description: Something on the Kingdom Portal looks or works wrong.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you see, and what did you expect to see?
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      placeholder: e.g. iPhone 15, Safari
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce

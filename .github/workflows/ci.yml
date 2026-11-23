@@ -1,0 +1,42 @@
+name: CI
+
+# Runs on every pull request and on pushes to main. It needs no secrets,
+# so pull requests from forks can be checked safely.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Validate data, test, type-check and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check kingdom records (data/kingdom.json)
+        run: npm run validate:data
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Type-check
+        run: npm run check
+
+      - name: Build
+        run: npx astro build
