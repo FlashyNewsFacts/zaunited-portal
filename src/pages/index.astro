@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Population from '../components/Population.astro';
+import JoinRealm from '../components/JoinRealm.astro';
+import Milestones from '../components/Milestones.astro';
+import Hollowing from '../components/Hollowing.astro';
+import Watch from '../components/Watch.astro';
+import ComingSoon from '../components/ComingSoon.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import rawKingdom from '../../data/kingdom.json';
+import { deriveKingdom, validateKingdom, type KingdomData } from '../lib/kingdom.ts';
+
+// Refuse to build with bad records, so the live site keeps its last good version.
+const { errors } = validateKingdom(rawKingdom);
+if (errors.length > 0) {
+  throw new Error(`data/kingdom.json is invalid:\n- ${errors.join('\n- ')}`);
+}
+
+const data = rawKingdom as unknown as KingdomData;
+const view = deriveKingdom(data);
+---
+
+<Base>
+  <Hero />
+  <main id="main">
+    <Population data={data} view={view} />
+    <JoinRealm />
+    <Milestones view={view} />
+    <Hollowing data={data} view={view} />
+    <Watch />
+    <ComingSoon />
+  </main>
+  <SiteFooter />
+</Base>

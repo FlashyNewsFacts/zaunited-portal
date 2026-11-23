@@ -1,0 +1,69 @@
+{
+  "_readme": "Kingdom records for the ZAUNITED Kingdom Portal. Edit carefully: see docs/UPDATING-THE-KINGDOM.md. Never enter a number you have not verified yourself.",
+
+  "population": {
+    "youtube": {
+      "count": null,
+      "verifiedOn": null,
+      "source": null
+    },
+    "tiktok": {
+      "count": null,
+      "verifiedOn": null,
+      "source": null
+    },
+    "instagram": {
+      "count": null,
+      "verifiedOn": null,
+      "source": null
+    }
+  },
+
+  "milestones": [
+    {
+      "population": 1,
+      "title": "The First Zaunite",
+      "description": "One brave soul answers King Mesmer's call. The kingdom is no longer empty.",
+      "unlockedOn": null
+    },
+    {
+      "population": 10,
+      "title": "A Small Settlement",
+      "description": "Tents and campfires gather around the ruined throne.",
+      "unlockedOn": null
+    },
+    {
+      "population": 25,
+      "title": "The Village of Zaun",
+      "description": "Homes rise from the rubble and the first lanterns are lit.",
+      "unlockedOn": null
+    },
+    {
+      "population": 50,
+      "title": "Defences of Zaun",
+      "description": "Walls and watchtowers stand ready against the coming dark.",
+      "unlockedOn": null
+    },
+    {
+      "population": 100,
+      "title": "First Target: 100 Zaunites",
+      "description": "One hundred Zaunites. The kingdom's first great goal.",
+      "unlockedOn": null
+    }
+  ],
+
+  "story": {
+    "hollowingTotalDays": 30,
+    "prophecy": {
+      "title": "The Prophecy of Zaun",
+      "summary": "The opening prophecy foretells the Hollowing. It is Day 0: the countdown starts here."
+    },
+    "historicalEpisodes": [
+      {
+        "title": "Episode 1",
+        "summary": "Part of ZAUNITED's earlier story. Preserved as it was released; it does not change the Hollowing countdown."
+      }
+    ],
+    "storyDays": []
+  }
+}

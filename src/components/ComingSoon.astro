@@ -1,0 +1,96 @@
+---
+/**
+ * Preview of future community features. These are NOT working features:
+ * there are deliberately no form fields, buttons or links that act on them.
+ */
+---
+
+<section class="section coming" id="coming-soon" aria-labelledby="coming-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Coming soon</p>
+      <h2 class="section-title" id="coming-title">Shape the Kingdom</h2>
+      <p class="section-lead">
+        Soon, Zaunites will help decide what the kingdom becomes. These features are still being built and are{' '}
+        <strong>not open yet</strong>.
+      </p>
+    </div>
+
+    <div class="coming-grid">
+      <article class="coming-card card reveal" aria-labelledby="suggest-title">
+        <span class="badge badge--muted">Coming soon · Not open yet</span>
+        <h3 id="suggest-title">Suggest an Upgrade</h3>
+        <p>
+          Propose new buildings, kingdom improvements, quests, events or website features. No account will be
+          needed. Every suggestion will be read by the Royal Council before it appears publicly.
+        </p>
+      </article>
+
+      <article class="coming-card card reveal" aria-labelledby="council-title">
+        <span class="badge badge--muted">Coming soon · Not open yet</span>
+        <h3 id="council-title">The Royal Council</h3>
+        <p>
+          Vote on selected kingdom decisions. Council votes will help guide future episodes, but the story's
+          established history stays as it is.
+        </p>
+        <p class="example">
+          <span class="example-label">Example question</span>
+          “Should Zaun build homes or defences first?”
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-lead strong {
+    color: var(--text);
+  }
+
+  .coming-grid {
+    display: grid;
+    gap: 16px;
+    max-width: 52rem;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 760px) {
+    .coming-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .coming-card {
+    padding: 22px;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    justify-items: start;
+    border-style: dashed;
+    background: rgba(26, 16, 51, 0.55);
+  }
+
+  .coming-card h3 {
+    font-size: 1.3rem;
+    color: var(--text);
+  }
+
+  .coming-card p {
+    color: var(--text-muted);
+  }
+
+  .example {
+    font-style: italic;
+    padding-left: 14px;
+    border-left: 2px solid var(--border);
+  }
+
+  .example-label {
+    display: block;
+    font-style: normal;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+</style>

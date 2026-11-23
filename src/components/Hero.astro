@@ -1,0 +1,207 @@
+---
+import KingdomScene from './KingdomScene.astro';
+import { SITE } from '../lib/site.ts';
+---
+
+<header class="hero">
+  <div class="hero-scene">
+    <KingdomScene />
+  </div>
+
+  <nav class="topbar container" aria-label="Main">
+    <a class="crest" href="/">
+      <img src="/favicon.svg" alt="" width="32" height="32" />
+      <span>Zaunited</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#population">Population</a></li>
+      <li><a href="#milestones">Milestones</a></li>
+      <li><a href="#hollowing">The Hollowing</a></li>
+      <li><a href="#watch">Watch</a></li>
+    </ul>
+    <a class="btn btn--ghost topbar-join" href="#join">Join</a>
+  </nav>
+
+  <div class="hero-copy container">
+    <p class="eyebrow">The Kingdom of Zaun</p>
+    <h1 class="hero-title">Zaunited</h1>
+    <p class="motto">{SITE.motto}</p>
+    <p class="hero-lead">
+      A fallen king. A ruined kingdom. A darkness drawing near. King Mesmer must rebuild Zaun before{' '}
+      <strong>the Hollowing</strong> arrives, and every new Zaunite helps the kingdom rise.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn--gold" href="#join">Join the realm</a>
+      <a class="btn btn--ghost" href="#watch">Watch the story</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    isolation: isolate;
+    background:
+      radial-gradient(90% 70% at 70% 20%, rgba(107, 69, 176, 0.35), transparent 70%),
+      linear-gradient(180deg, #0e0a24 0%, #1a1240 55%, #0b0918 100%);
+  }
+
+  .topbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: 8px;
+  }
+
+  .crest {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .nav-links {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 28px;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .nav-links a:hover {
+    color: var(--gold);
+  }
+
+  .topbar-join {
+    min-height: 44px;
+    padding: 8px 18px;
+    font-size: 0.8rem;
+  }
+
+  .hero-copy {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 14px;
+    justify-items: center;
+    text-align: center;
+    padding-top: clamp(28px, 7vw, 64px);
+  }
+
+  .hero-title {
+    font-size: clamp(3rem, 15vw, 6.5rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+    background: linear-gradient(180deg, var(--gold-bright) 10%, var(--gold) 50%, var(--gold-deep) 95%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 4px 18px rgba(240, 200, 106, 0.25));
+  }
+
+  .motto {
+    font-family: var(--font-display);
+    font-size: clamp(1.05rem, 4.2vw, 1.5rem);
+    color: var(--text);
+    letter-spacing: 0.06em;
+  }
+
+  .hero-lead {
+    max-width: 34rem;
+    color: var(--text-muted);
+  }
+
+  .hero-lead strong {
+    color: var(--crimson-text);
+    font-weight: 600;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  /* Phone & tablet portrait: text first, scene below */
+  .hero-scene {
+    order: 3;
+    position: relative;
+    height: clamp(300px, 78vw, 560px);
+    margin-top: -24px;
+    z-index: 0;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 30%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 30%);
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      min-height: min(92vh, 860px);
+    }
+
+    /* Shift the scene right so Mesmer stands beside the text, not behind it */
+    .hero-scene {
+      position: absolute;
+      inset: 0 0 0 24%;
+      height: auto;
+      margin: 0;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 22%);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(60% 70% at 0% 60%, rgba(3, 2, 8, 0.85), transparent 70%);
+      pointer-events: none;
+    }
+
+    .nav-links {
+      display: flex;
+    }
+
+    .hero-copy {
+      justify-items: start;
+      text-align: left;
+      max-width: var(--content);
+      padding-top: clamp(48px, 8vh, 96px);
+      padding-bottom: 120px;
+    }
+
+    .hero-copy > * {
+      max-width: 30rem;
+    }
+
+    .hero-copy > .hero-title {
+      max-width: none;
+    }
+
+    .hero-actions {
+      justify-content: flex-start;
+    }
+  }
+</style>

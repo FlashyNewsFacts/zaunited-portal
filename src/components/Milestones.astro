@@ -1,0 +1,350 @@
+---
+import { formatDate, type KingdomView } from '../lib/kingdom.ts';
+
+interface Props {
+  view: KingdomView;
+}
+
+const { view } = Astro.props;
+const { nextMilestone, latestUnlocked, progressPercent, combined } = view;
+const hasData = view.verifiedPlatforms.length > 0;
+const remaining = nextMilestone ? Math.max(0, nextMilestone.population - combined) : 0;
+---
+
+<section class="section milestones" id="milestones" aria-labelledby="milestones-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Rebuilding Zaun</p>
+      <h2 class="section-title" id="milestones-title">Kingdom Milestones</h2>
+      <p class="section-lead">
+        As the population grows, Zaun rises from the ruins. Once a milestone is unlocked, it stays unlocked for
+        good.
+      </p>
+    </div>
+
+    {
+      latestUnlocked && (
+        <div class="celebration card reveal" role="note">
+          <svg class="celebration-crown" viewBox="0 0 64 40" width="48" height="30" aria-hidden="true">
+            <path d="M4 36 L6 6 L20 20 L32 2 L44 20 L58 6 L60 36 Z" fill="currentColor" />
+          </svg>
+          <p class="eyebrow">Latest unlock</p>
+          <p class="celebration-title">{latestUnlocked.title}</p>
+          {latestUnlocked.unlockedOn && (
+            <p class="celebration-date">
+              Unlocked <time datetime={latestUnlocked.unlockedOn}>{formatDate(latestUnlocked.unlockedOn)}</time>
+            </p>
+          )}
+        </div>
+      )
+    }
+
+    <div class="progress card reveal">
+      {
+        nextMilestone ? (
+          <>
+            <div class="progress-head">
+              <p class="progress-label">
+                Next upgrade: <strong>{nextMilestone.title}</strong>
+              </p>
+              <p class="progress-count">
+                {hasData ? combined : '—'} / {nextMilestone.population}
+              </p>
+            </div>
+            <div
+              class="bar"
+              role="progressbar"
+              aria-label={`Progress towards ${nextMilestone.title}`}
+              aria-valuemin="0"
+              aria-valuemax={nextMilestone.population}
+              aria-valuenow={hasData ? combined : 0}
+              aria-valuetext={
+                hasData
+                  ? `${combined} of ${nextMilestone.population} Zaunites`
+                  : 'Awaiting the first verified population count'
+              }
+            >
+              <span class="bar-fill" style={`--progress: ${hasData ? progressPercent : 0}%`} />
+            </div>
+            <p class="progress-hint">
+              {hasData
+                ? `${remaining} more ${remaining === 1 ? 'Zaunite' : 'Zaunites'} needed to unlock ${nextMilestone.title}.`
+                : 'Progress will appear once the first population count has been verified.'}
+            </p>
+          </>
+        ) : (
+          <p class="progress-label">
+            Every milestone has been unlocked. New chapters of the kingdom will be revealed soon.
+          </p>
+        )
+      }
+    </div>
+
+    <ol class="timeline" role="list">
+      {
+        view.milestones.map((m) => (
+          <li class={`step step--${m.state} reveal`}>
+            <span class="step-marker" aria-hidden="true">
+              {m.state === 'unlocked' && '✓'}
+              {m.state === 'next' && '★'}
+              {m.state === 'locked' && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                  <rect x="5" y="11" width="14" height="10" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+              )}
+            </span>
+            <div class="step-body card">
+              <div class="step-top">
+                <span class="step-pop">
+                  {m.population} {m.population === 1 ? 'Zaunite' : 'Zaunites'}
+                </span>
+                {m.state === 'unlocked' && <span class="badge">Unlocked</span>}
+                {m.state === 'next' && <span class="badge badge--crimson">Next</span>}
+                {m.state === 'locked' && <span class="badge badge--muted">Locked</span>}
+              </div>
+              <h3 class="step-title">{m.title}</h3>
+              <p class="step-desc">{m.description}</p>
+              {m.unlockedOn && (
+                <p class="step-date">
+                  Unlocked <time datetime={m.unlockedOn}>{formatDate(m.unlockedOn)}</time>
+                </p>
+              )}
+            </div>
+          </li>
+        ))
+      }
+      <li class="step step--future reveal">
+        <span class="step-marker" aria-hidden="true">…</span>
+        <div class="step-body step-body--future">
+          <p>More milestones will be revealed as the kingdom grows.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<style>
+  .celebration {
+    position: relative;
+    overflow: hidden;
+    max-width: 30rem;
+    margin: 0 auto 16px;
+    padding: 22px;
+    text-align: center;
+    display: grid;
+    gap: 4px;
+    border-color: var(--gold);
+    background: linear-gradient(135deg, rgba(240, 200, 106, 0.18), rgba(59, 31, 107, 0.8));
+  }
+
+  .celebration::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 227, 161, 0.25) 50%, transparent 70%);
+    transform: translateX(-100%);
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .celebration::after {
+      animation: shimmer 4.5s ease-in-out infinite;
+    }
+    .step--next .step-marker {
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+  }
+
+  @keyframes shimmer {
+    0%,
+    40% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 133, 151, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(255, 133, 151, 0);
+    }
+  }
+
+  .celebration-crown {
+    justify-self: center;
+    color: var(--gold-bright);
+    filter: drop-shadow(0 0 10px rgba(240, 200, 106, 0.6));
+  }
+
+  .celebration-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+  }
+
+  .celebration-date {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .progress {
+    max-width: 40rem;
+    margin: 0 auto clamp(28px, 5vw, 44px);
+    padding: 20px clamp(18px, 4vw, 28px);
+    display: grid;
+    gap: 12px;
+  }
+
+  .progress-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .progress-label strong {
+    color: var(--gold);
+    font-family: var(--font-display);
+  }
+
+  .progress-count {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+
+  .bar {
+    height: 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-soft);
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    display: block;
+    height: 100%;
+    width: var(--progress);
+    min-width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--crimson), var(--gold));
+    box-shadow: 0 0 16px rgba(240, 200, 106, 0.5);
+  }
+
+  .progress-hint {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+  }
+
+  .timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 40rem;
+    position: relative;
+    display: grid;
+    gap: 16px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 21px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--gold-deep), rgba(185, 170, 220, 0.15));
+  }
+
+  .step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .step-marker {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: 2px solid var(--border-soft);
+    background: var(--surface-solid);
+    color: var(--text-faint);
+  }
+
+  .step--unlocked .step-marker {
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold-deep));
+    border-color: var(--gold);
+    color: #1b1030;
+    box-shadow: var(--glow-gold);
+  }
+
+  .step--next .step-marker {
+    border-color: var(--crimson-text);
+    color: var(--crimson-text);
+  }
+
+  .step-body {
+    padding: 16px 18px;
+    display: grid;
+    gap: 6px;
+  }
+
+  .step--unlocked .step-body {
+    border-color: var(--border);
+  }
+
+  .step--locked .step-body {
+    opacity: 0.72;
+  }
+
+  .step-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .step-pop {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .step-title {
+    font-size: 1.2rem;
+  }
+
+  .step-desc {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+  }
+
+  .step-date {
+    font-size: 0.875rem;
+    color: var(--gold);
+  }
+
+  .step-body--future {
+    padding: 10px 4px;
+    color: var(--text-faint);
+    font-style: italic;
+  }
+</style>

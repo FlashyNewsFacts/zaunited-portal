@@ -1,0 +1,268 @@
+---
+import PlatformIcon from './PlatformIcon.astro';
+import { PLATFORMS } from '../lib/site.ts';
+import { formatDate, type KingdomData, type KingdomView } from '../lib/kingdom.ts';
+
+interface Props {
+  data: KingdomData;
+  view: KingdomView;
+}
+
+const { data, view } = Astro.props;
+const nothingVerified = view.verifiedPlatforms.length === 0;
+const partial = !nothingVerified && view.awaitingPlatforms.length > 0;
+const awaitingNames = PLATFORMS.filter((p) => view.awaitingPlatforms.includes(p.id)).map((p) => p.name);
+const number = new Intl.NumberFormat('en-GB');
+---
+
+<section class="section population" id="population" aria-labelledby="population-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">The Kingdom's Census</p>
+      <h2 class="section-title" id="population-title">Population of Zaun</h2>
+    </div>
+
+    <div class="census card reveal">
+      <p class="census-label">Zaunites: Combined Platform Follows</p>
+      {
+        nothingVerified ? (
+          <div class="census-awaiting">
+            <svg class="seal" viewBox="0 0 64 64" width="72" height="72" aria-hidden="true">
+              <circle cx="32" cy="32" r="28" fill="#8e1a30" />
+              <circle cx="32" cy="32" r="22" fill="none" stroke="#c9952f" stroke-width="1.5" stroke-dasharray="3 3" />
+              <path d="M18 40 L19.5 24 L26 31 L32 20 L38 31 L44.5 24 L46 40 Z" fill="#f0c86a" />
+            </svg>
+            <p class="awaiting-title">Awaiting verification</p>
+            <p class="awaiting-text">
+              The Royal Scribe has not yet recorded a verified count. We only show figures we have checked,
+              never estimates, so the first census will appear here soon.
+            </p>
+          </div>
+        ) : (
+          <p class="census-number">{number.format(view.combined)}</p>
+        )
+      }
+
+      {
+        partial && (
+          <p class="census-partial">
+            Includes {view.verifiedPlatforms.length} of 3 platforms. {awaitingNames.join(' and ')}{' '}
+            {awaitingNames.length === 1 ? 'is' : 'are'} awaiting verification.
+          </p>
+        )
+      }
+
+      <p class="census-note">
+        This is the combined total of YouTube subscribers, TikTok followers and Instagram followers. Someone who
+        follows on more than one platform is counted more than once, so it is <strong>not</strong> a count of
+        unique people.
+      </p>
+
+      <p class="census-updated">
+        {
+          view.lastVerifiedOn ? (
+            <>
+              Last verified: <time datetime={view.lastVerifiedOn}>{formatDate(view.lastVerifiedOn)}</time>
+            </>
+          ) : (
+            'Last verified: awaiting the first census'
+          )
+        }
+      </p>
+    </div>
+
+    <ul class="platforms" role="list">
+      {
+        PLATFORMS.map((platform) => {
+          const record = data.population[platform.id];
+          const verified = record.count !== null;
+          return (
+            <li class={`platform card reveal platform--${platform.id}`}>
+              <div class="platform-head">
+                <span class="platform-icon-wrap">
+                  <PlatformIcon id={platform.id} size={22} />
+                </span>
+                <span class="platform-name">{platform.name}</span>
+              </div>
+              {verified ? (
+                <p class="platform-count">
+                  {number.format(record.count ?? 0)} <span class="platform-metric">{platform.metric}</span>
+                </p>
+              ) : (
+                <p class="platform-count platform-count--awaiting">Awaiting verification</p>
+              )}
+              <p class="platform-source">
+                {verified && record.verifiedOn ? (
+                  <>
+                    Source: {record.source} · Verified{' '}
+                    <time datetime={record.verifiedOn}>{formatDate(record.verifiedOn)}</time>
+                  </>
+                ) : (
+                  <>No verified {platform.metric} figure yet.</>
+                )}
+              </p>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <p class="method">
+      Counts are checked by the ZAUNITED team on each platform and recorded with their source and date. They are
+      updated by hand, so they are not live.
+    </p>
+  </div>
+</section>
+
+<style>
+  .census {
+    position: relative;
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: clamp(24px, 6vw, 44px);
+    text-align: center;
+    display: grid;
+    gap: 14px;
+    border-color: var(--border);
+    background:
+      radial-gradient(80% 60% at 50% 0%, rgba(240, 200, 106, 0.12), transparent 70%),
+      var(--surface);
+  }
+
+  .census-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .census-number {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(4rem, 22vw, 7.5rem);
+    line-height: 1;
+    color: var(--gold-bright);
+    text-shadow: 0 0 40px rgba(240, 200, 106, 0.35);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .census-awaiting {
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+  }
+
+  .seal {
+    filter: drop-shadow(0 6px 16px rgba(179, 32, 58, 0.45));
+    margin-block: 6px;
+  }
+
+  .awaiting-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--text);
+  }
+
+  .awaiting-text,
+  .census-note {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+  }
+
+  .census-partial {
+    color: var(--gold);
+    font-size: 0.98rem;
+  }
+
+  .census-note strong {
+    color: var(--text);
+  }
+
+  .census-updated {
+    font-size: 0.9rem;
+    color: var(--text-faint);
+    border-top: 1px solid var(--border-soft);
+    padding-top: 14px;
+  }
+
+  .platforms {
+    list-style: none;
+    padding: 0;
+    margin: 20px auto 0;
+    max-width: 52rem;
+    display: grid;
+    gap: 12px;
+  }
+
+  @media (min-width: 720px) {
+    .platforms {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .platform {
+    padding: 18px 20px;
+    display: grid;
+    gap: 6px;
+    align-content: start;
+  }
+
+  .platform-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .platform-icon-wrap {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(240, 200, 106, 0.1);
+    color: var(--gold);
+    --icon-cutout: #2a1d4c;
+  }
+
+  .platform-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .platform-count {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .platform-count--awaiting {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+  }
+
+  .platform-metric {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+
+  .platform-source {
+    font-size: 0.875rem;
+    color: var(--text-faint);
+  }
+
+  .method {
+    max-width: 40rem;
+    margin: 20px auto 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-faint);
+  }
+</style>

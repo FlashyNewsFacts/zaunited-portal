@@ -1,0 +1,297 @@
+---
+/**
+ * TEMPORARY PLACEHOLDER ARTWORK — original low-poly SVG drawn for the portal.
+ * Replace with approved, published ZAUNITED artwork when supplied.
+ * Shows King Mesmer (with a written speech bubble, as he is mute) before the
+ * ruins of Zaun, while the Hollowing creeps in from the left.
+ */
+---
+
+<svg
+  class="scene"
+  viewBox="0 0 1200 700"
+  preserveAspectRatio="xMidYMax slice"
+  role="img"
+  aria-labelledby="scene-title"
+>
+  <title id="scene-title">
+    Placeholder artwork: King Mesmer, wearing a gold crown and a crimson cloak, stands on a rock before the
+    ruins of Zaun under a full moon, with a silent speech bubble beside him. A dark mist, the Hollowing,
+    creeps in from the left.
+  </title>
+  <defs>
+    <radialGradient id="moon-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffe3a1" stop-opacity="0.45"></stop>
+      <stop offset="1" stop-color="#ffe3a1" stop-opacity="0"></stop>
+    </radialGradient>
+    <linearGradient id="hollow-fade" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#030208" stop-opacity="0.98"></stop>
+      <stop offset="0.55" stop-color="#0b0618" stop-opacity="0.85"></stop>
+      <stop offset="1" stop-color="#1a0f33" stop-opacity="0"></stop>
+    </linearGradient>
+    <radialGradient id="hollow-heart" cx="0.25" cy="0.55" r="0.6">
+      <stop offset="0" stop-color="#5b21b6" stop-opacity="0.35"></stop>
+      <stop offset="1" stop-color="#5b21b6" stop-opacity="0"></stop>
+    </radialGradient>
+    <linearGradient id="ground-fade" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0b0918" stop-opacity="0"></stop>
+      <stop offset="1" stop-color="#0b0918" stop-opacity="1"></stop>
+    </linearGradient>
+  </defs>
+
+  <!-- Stars -->
+  <g class="stars" fill="#f2ead8">
+    <circle cx="420" cy="70" r="1.6" opacity="0.8"></circle>
+    <circle cx="520" cy="140" r="1.2" opacity="0.6" class="twinkle"></circle>
+    <circle cx="640" cy="60" r="1.8" opacity="0.9"></circle>
+    <circle cx="720" cy="180" r="1.1" opacity="0.5" class="twinkle"></circle>
+    <circle cx="960" cy="90" r="1.5" opacity="0.7" class="twinkle"></circle>
+    <circle cx="1040" cy="200" r="1.2" opacity="0.6"></circle>
+    <circle cx="1120" cy="60" r="1.7" opacity="0.8"></circle>
+    <circle cx="560" cy="230" r="1" opacity="0.5"></circle>
+    <circle cx="880" cy="40" r="1.2" opacity="0.6"></circle>
+    <circle cx="350" cy="190" r="1.3" opacity="0.5" class="twinkle"></circle>
+  </g>
+
+  <!-- Moon -->
+  <circle cx="830" cy="190" r="150" fill="url(#moon-glow)" class="moon-glow"></circle>
+  <polygon points="830,128 878,150 892,196 868,240 820,252 780,226 770,178 792,142" fill="#f6e7c1"></polygon>
+  <polygon points="830,128 878,150 892,196 840,190" fill="#fff4d8"></polygon>
+  <polygon points="780,226 820,252 868,240 840,190" fill="#e6d2a3"></polygon>
+  <polygon points="805,170 820,165 826,180 812,186" fill="#dcc592"></polygon>
+
+  <!-- Far mountains -->
+  <polygon
+    points="0,470 90,360 170,420 260,300 350,400 430,330 520,430 600,330 690,410 770,310 860,390 950,300 1040,410 1120,340 1200,400 1200,700 0,700"
+    fill="#24164a"></polygon>
+  <g fill="#2f1d5c">
+    <polygon points="260,300 350,400 290,430"></polygon>
+    <polygon points="430,330 520,430 455,440"></polygon>
+    <polygon points="600,330 690,410 630,440"></polygon>
+    <polygon points="770,310 860,390 800,430"></polygon>
+    <polygon points="950,300 1040,410 975,430"></polygon>
+    <polygon points="1120,340 1200,400 1150,430"></polygon>
+    <polygon points="90,360 170,420 115,440"></polygon>
+  </g>
+
+  <!-- Middle hills -->
+  <polygon points="0,560 140,470 300,520 460,470 620,500 800,450 980,500 1200,470 1200,700 0,700" fill="#1a1036"></polygon>
+  <g fill="#211543">
+    <polygon points="140,470 300,520 190,540"></polygon>
+    <polygon points="800,450 980,500 850,530"></polygon>
+    <polygon points="460,470 620,500 500,525"></polygon>
+  </g>
+
+  <!-- Ruined castle of Zaun -->
+  <g class="castle">
+    <polygon points="380,580 470,480 560,462 650,480 740,580" fill="#150d2e"></polygon>
+    <!-- left tower, broken top -->
+    <polygon points="472,480 472,382 486,374 496,386 508,370 512,480" fill="#1b1239"></polygon>
+    <!-- keep -->
+    <polygon
+      points="528,470 528,320 538,320 538,308 550,308 550,320 562,320 562,308 574,308 574,320 586,320 586,470"
+      fill="#1e143f"></polygon>
+    <polygon points="557,320 586,320 586,470 557,470" fill="#170f33"></polygon>
+    <!-- right tower, collapsed -->
+    <polygon points="602,480 602,372 616,366 630,388 640,380 640,480" fill="#1b1239"></polygon>
+    <!-- walls -->
+    <polygon points="512,480 512,430 528,430 528,480" fill="#170f33"></polygon>
+    <polygon points="586,480 586,436 602,428 602,480" fill="#170f33"></polygon>
+    <!-- a few lights still burning -->
+    <g fill="#f0c86a" class="windows">
+      <rect x="548" y="350" width="7" height="12" rx="3"></rect>
+      <rect x="486" y="414" width="6" height="10" rx="3" opacity="0.8"></rect>
+      <rect x="566" y="404" width="7" height="12" rx="3" opacity="0.6"></rect>
+    </g>
+  </g>
+
+  <!-- Ground -->
+  <polygon points="0,630 200,600 420,622 600,598 820,612 1000,596 1200,618 1200,700 0,700" fill="#0d0920"></polygon>
+
+  <!-- Mesmer's rock -->
+  <polygon points="590,700 620,598 660,580 742,578 782,596 812,700" fill="#120c28"></polygon>
+  <polygon points="660,580 742,578 700,612" fill="#1b1239"></polygon>
+  <polygon points="742,578 782,596 812,700 740,640" fill="#0c0820"></polygon>
+
+  <!-- King Mesmer -->
+  <g class="mesmer">
+    <!-- cloak back -->
+    <polygon points="672,418 642,446 618,566 636,556 646,572 664,556 668,478" fill="#7a1529"></polygon>
+    <polygon points="708,418 738,446 762,566 744,556 734,572 716,556 712,478" fill="#a51d36"></polygon>
+    <!-- legs -->
+    <polygon points="674,500 689,500 687,574 673,574" fill="#0f0a22"></polygon>
+    <polygon points="691,500 706,500 707,574 693,574" fill="#150e2c"></polygon>
+    <polygon points="668,570 689,570 689,580 664,580" fill="#24183f"></polygon>
+    <polygon points="691,570 712,570 716,580 691,580" fill="#24183f"></polygon>
+    <!-- tunic -->
+    <polygon points="670,414 710,414 722,506 658,506" fill="#2c1d57"></polygon>
+    <polygon points="690,414 710,414 722,506 690,506" fill="#3b2672"></polygon>
+    <rect x="662" y="470" width="56" height="7" rx="2" fill="#c9952f"></rect>
+    <!-- cloak shoulders and clasp -->
+    <polygon points="664,414 716,414 724,432 656,432" fill="#b3203a"></polygon>
+    <circle cx="690" cy="420" r="5" fill="#f0c86a"></circle>
+    <!-- head -->
+    <polygon points="690,372 706,381 707,399 690,410 673,399 674,381" fill="#d9bf9a"></polygon>
+    <polygon points="690,372 706,381 707,399 692,392" fill="#c6a77f"></polygon>
+    <circle cx="684" cy="391" r="1.9" fill="#1a1033"></circle>
+    <circle cx="696" cy="391" r="1.9" fill="#1a1033"></circle>
+    <path d="M681 385 L687 386 M693 386 L699 385" stroke="#5a4330" stroke-width="1.4" stroke-linecap="round"></path>
+    <!-- crown -->
+    <polygon points="671,380 673,358 681,368 690,350 699,368 707,358 709,380" fill="#f0c86a"></polygon>
+    <polygon points="690,350 699,368 707,358 709,380 690,380" fill="#c9952f"></polygon>
+    <circle cx="690" cy="372" r="2.6" fill="#b3203a"></circle>
+  </g>
+
+  <!-- Written speech bubble (Mesmer is mute) -->
+  <g class="bubble">
+    <rect x="738" y="300" width="124" height="62" rx="16" fill="#f2ead8"></rect>
+    <polygon points="752,356 774,360 714,384" fill="#f2ead8"></polygon>
+    <g fill="#1a1033">
+      <circle cx="780" cy="331" r="5"></circle>
+      <circle cx="800" cy="331" r="5"></circle>
+      <circle cx="820" cy="331" r="5"></circle>
+    </g>
+  </g>
+
+  <!-- Embers rising from the ruins -->
+  <g class="embers" fill="#f0c86a">
+    <circle cx="560" cy="470" r="2.2"></circle>
+    <circle cx="610" cy="500" r="1.6"></circle>
+    <circle cx="520" cy="520" r="1.8"></circle>
+    <circle cx="660" cy="540" r="1.4"></circle>
+    <circle cx="760" cy="520" r="2"></circle>
+    <circle cx="840" cy="560" r="1.5"></circle>
+  </g>
+
+  <!-- The Hollowing -->
+  <g class="hollowing">
+    <rect x="-200" y="0" width="760" height="700" fill="url(#hollow-fade)"></rect>
+    <path
+      d="M-200,0 L330,0 C270,90 360,160 290,240 C230,310 330,370 270,450 C220,520 310,600 250,700 L-200,700 Z"
+      fill="#05030c"
+      opacity="0.75"></path>
+    <rect x="-200" y="0" width="900" height="700" fill="url(#hollow-heart)"></rect>
+    <g class="hollow-eyes" fill="#ff4d6d">
+      <ellipse cx="226" cy="470" rx="5" ry="2.4"></ellipse>
+      <ellipse cx="250" cy="470" rx="5" ry="2.4"></ellipse>
+    </g>
+  </g>
+
+  <rect x="0" y="560" width="1200" height="140" fill="url(#ground-fade)"></rect>
+</svg>
+
+<style>
+  .scene {
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .twinkle {
+      animation: twinkle 4s ease-in-out infinite alternate;
+    }
+    .twinkle:nth-child(3n) {
+      animation-delay: -1.5s;
+    }
+    .moon-glow {
+      animation: glow 7s ease-in-out infinite alternate;
+      transform-origin: 830px 190px;
+    }
+    .bubble {
+      animation: float 5s ease-in-out infinite alternate;
+    }
+    .embers circle {
+      transform-box: fill-box;
+      animation: rise 7s linear infinite;
+    }
+    .embers circle:nth-child(2) {
+      animation-delay: -2s;
+      animation-duration: 9s;
+    }
+    .embers circle:nth-child(3) {
+      animation-delay: -4s;
+    }
+    .embers circle:nth-child(4) {
+      animation-delay: -1s;
+      animation-duration: 8s;
+    }
+    .embers circle:nth-child(5) {
+      animation-delay: -5s;
+      animation-duration: 10s;
+    }
+    .embers circle:nth-child(6) {
+      animation-delay: -3s;
+    }
+    .hollowing {
+      animation: creep 14s ease-in-out infinite alternate;
+    }
+    .hollow-eyes {
+      animation: blink 9s ease-in-out infinite;
+    }
+  }
+
+  @keyframes twinkle {
+    from {
+      opacity: 0.2;
+    }
+    to {
+      opacity: 0.95;
+    }
+  }
+  @keyframes glow {
+    from {
+      opacity: 0.7;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+  }
+  @keyframes float {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-6px);
+    }
+  }
+  @keyframes rise {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0;
+    }
+    15% {
+      opacity: 0.9;
+    }
+    100% {
+      transform: translate(18px, -220px);
+      opacity: 0;
+    }
+  }
+  @keyframes creep {
+    from {
+      transform: translateX(-14px);
+    }
+    to {
+      transform: translateX(16px);
+    }
+  }
+  @keyframes blink {
+    0%,
+    40%,
+    100% {
+      opacity: 0;
+    }
+    48%,
+    70% {
+      opacity: 0.85;
+    }
+    72% {
+      opacity: 0;
+    }
+    74% {
+      opacity: 0.85;
+    }
+  }
+</style>
