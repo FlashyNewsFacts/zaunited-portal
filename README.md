@@ -66,6 +66,12 @@ npm run verify     # validate data + tests + type-check + build (same as CI)
 | `npm run check` | Type-checks the project |
 | `npm run build` | Validates the data, then builds the site into `dist/` |
 
+## Roadmap
+
+See [docs/ZAUNITED_ROADMAP.md](docs/ZAUNITED_ROADMAP.md) for the approved long-term
+project direction. The current priority is the M0–M1 portal MVP; later phases
+each need separate approval.
+
 ## Contributing
 
 This repository is currently private while the portal is being built. See

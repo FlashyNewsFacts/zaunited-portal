@@ -2,6 +2,10 @@
 
 Public, mobile-first fantasy kingdom site for ZAUNITED (Astro, static output).
 
+## Roadmap
+- [`docs/ZAUNITED_ROADMAP.md`](docs/ZAUNITED_ROADMAP.md) is the approved long-term direction. It is **not** permission to start more work.
+- Current priority and only authorised scope: **M0–M1 portal MVP**. Don't start M2+ portal features, community voting, episode production or StoryForge changes without separate explicit approval.
+
 ## Hard rules
 - Never invent follower/subscriber figures. Counts come only from `data/kingdom.json`, entered by the team with source + date.
 - Combined total = YouTube + TikTok + Instagram, labelled "Zaunites: Combined Platform Follows"; never call it unique people.
