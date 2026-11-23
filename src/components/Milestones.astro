@@ -32,7 +32,7 @@ const remaining = nextMilestone ? Math.max(0, nextMilestone.population - combine
           <p class="celebration-title">{latestUnlocked.title}</p>
           {latestUnlocked.unlockedOn && (
             <p class="celebration-date">
-              Unlocked <time datetime={latestUnlocked.unlockedOn}>{formatDate(latestUnlocked.unlockedOn)}</time>
+              Unlock recorded <time datetime={latestUnlocked.unlockedOn}>{formatDate(latestUnlocked.unlockedOn)}</time>
             </p>
           )}
         </div>
@@ -107,7 +107,7 @@ const remaining = nextMilestone ? Math.max(0, nextMilestone.population - combine
               <p class="step-desc">{m.description}</p>
               {m.unlockedOn && (
                 <p class="step-date">
-                  Unlocked <time datetime={m.unlockedOn}>{formatDate(m.unlockedOn)}</time>
+                  Unlock recorded <time datetime={m.unlockedOn}>{formatDate(m.unlockedOn)}</time>
                 </p>
               )}
             </div>
