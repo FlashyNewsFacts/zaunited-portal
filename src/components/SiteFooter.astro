@@ -1,0 +1,114 @@
+---
+import { PLATFORMS, SITE } from '../lib/site.ts';
+
+const year = new Date().getUTCFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p class="footer-motto">{SITE.motto}</p>
+
+    <div class="footer-grid">
+      <section aria-labelledby="numbers-title">
+        <h2 class="footer-title" id="numbers-title">About the numbers</h2>
+        <p>
+          The population is the combined number of follows across YouTube, TikTok and Instagram. One person
+          following on several platforms is counted more than once. Figures are verified by the ZAUNITED team and
+          updated by hand; they are never estimated or invented.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-title">
+        <h2 class="footer-title" id="privacy-title">Privacy</h2>
+        <p>
+          This site has no accounts, forms, cookies, analytics or advertising trackers, and it doesn't collect
+          personal information. Like any website, our hosting provider processes basic technical data (such as IP
+          addresses) to deliver and protect the site.
+        </p>
+      </section>
+
+      <section aria-labelledby="follow-title">
+        <h2 class="footer-title" id="follow-title">Official accounts</h2>
+        <ul class="footer-links" role="list">
+          {
+            PLATFORMS.map((p) => (
+              <li>
+                <a href={p.profileUrl} rel="noopener">
+                  {p.name} · {p.handle}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+
+    <p class="footer-small">
+      © {year} ZAUNITED. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: 56px max(40px, env(safe-area-inset-bottom));
+    background: var(--bg-deep);
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .footer-inner {
+    display: grid;
+    gap: 32px;
+  }
+
+  .footer-motto {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.2rem, 5vw, 1.6rem);
+    text-align: center;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+
+  .footer-grid {
+    display: grid;
+    gap: 28px;
+  }
+
+  @media (min-width: 820px) {
+    .footer-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .footer-title {
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .footer-grid p,
+  .footer-small {
+    color: var(--text-faint);
+    font-size: 0.92rem;
+  }
+
+  .footer-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+
+  .footer-links a {
+    display: inline-block;
+    padding-block: 8px;
+  }
+
+  .footer-small {
+    text-align: center;
+  }
+</style>

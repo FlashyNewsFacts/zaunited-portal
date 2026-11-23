@@ -1,0 +1,16 @@
+name: Website feature idea
+description: Suggest an improvement to the Kingdom Portal website.
+labels: [idea]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: What would you like the portal to do, and why would it help Zaunites?
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        Story ideas (new buildings, quests, events) will be collected through the portal's
+        "Suggest an Upgrade" feature once it opens.

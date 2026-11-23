@@ -1,0 +1,80 @@
+---
+import PlatformIcon from './PlatformIcon.astro';
+import { PLATFORMS } from '../lib/site.ts';
+---
+
+<section class="section watch" id="watch" aria-labelledby="watch-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">The Story So Far</p>
+      <h2 class="section-title" id="watch-title">Watch the Chronicles</h2>
+      <p class="section-lead">
+        Follow King Mesmer's silent quest to rebuild Zaun. Every episode is free to watch on your favourite
+        platform.
+      </p>
+    </div>
+    <ul class="watch-list" role="list">
+      {
+        PLATFORMS.map((platform) => (
+          <li class="reveal">
+            <a class="watch-link card" href={platform.videosUrl} rel="noopener">
+              <span class="watch-icon">
+                <PlatformIcon id={platform.id} size={26} />
+              </span>
+              <span class="watch-label">Watch on {platform.name}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .watch-list {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 52rem;
+    display: grid;
+    gap: 12px;
+  }
+
+  @media (min-width: 720px) {
+    .watch-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .watch-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 68px;
+    padding: 14px 18px;
+    color: var(--text);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .watch-link:hover {
+    color: var(--text);
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .watch-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    color: var(--gold);
+    --icon-cutout: #1f1540;
+    flex: none;
+  }
+</style>

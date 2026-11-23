@@ -1,0 +1,132 @@
+---
+import PlatformIcon from './PlatformIcon.astro';
+import { PLATFORMS } from '../lib/site.ts';
+---
+
+<section class="section join" id="join" aria-labelledby="join-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Answer the King's Call</p>
+      <h2 class="section-title" id="join-title">Join the Realm</h2>
+      <p class="section-lead">
+        Follow ZAUNITED on <strong>any one</strong> platform to become a Zaunite. You don't need all three. Pick the
+        one you use most.
+      </p>
+    </div>
+
+    <ul class="join-list" role="list">
+      {
+        PLATFORMS.map((platform) => (
+          <li class="reveal">
+            <a class={`join-btn join-btn--${platform.id}`} href={platform.profileUrl} rel="noopener">
+              <span class="join-icon">
+                <PlatformIcon id={platform.id} size={28} />
+              </span>
+              <span class="join-text">
+                <span class="join-action">Follow on {platform.name}</span>
+                <span class="join-handle">{platform.handle}</span>
+              </span>
+              <span class="join-arrow" aria-hidden="true">
+                →
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="join-note">
+      These buttons open ZAUNITED's official profiles. Tapping one doesn't record anything about you, and the
+      population count only changes when the team verifies the platforms' own figures.
+    </p>
+  </div>
+</section>
+
+<style>
+  .join {
+    background:
+      radial-gradient(70% 50% at 50% 50%, rgba(59, 31, 107, 0.45), transparent 70%);
+  }
+
+  .section-lead strong {
+    color: var(--gold);
+  }
+
+  .join-list {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 30rem;
+    display: grid;
+    gap: 14px;
+  }
+
+  .join-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 76px;
+    padding: 14px 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(59, 31, 107, 0.9), rgba(26, 16, 51, 0.95));
+    box-shadow: var(--shadow);
+    color: var(--text);
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .join-btn:hover {
+    color: var(--text);
+    transform: translateY(-2px);
+    border-color: var(--gold);
+    box-shadow: var(--shadow), var(--glow-gold);
+  }
+
+  .join-btn:active {
+    transform: scale(0.98);
+  }
+
+  .join-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--gold);
+    color: #1b1030;
+    --icon-cutout: var(--gold);
+  }
+
+  .join-text {
+    display: grid;
+    flex: 1;
+  }
+
+  .join-action {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+  }
+
+  .join-handle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+  }
+
+  .join-arrow {
+    font-size: 1.4rem;
+    color: var(--gold);
+  }
+
+  .join-note {
+    max-width: 30rem;
+    margin: 20px auto 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-faint);
+  }
+</style>

@@ -1,0 +1,326 @@
+---
+import { formatDate, type KingdomData, type KingdomView } from '../lib/kingdom.ts';
+import { platformById } from '../lib/site.ts';
+import { Picture } from 'astro:assets';
+// Official artwork, approved for this position (crop/resize only, never altered).
+// The countdown itself stays as live text below the image.
+import hollowingArt from '../assets/brand/hollowing-art.png';
+
+interface Props {
+  data: KingdomData;
+  view: KingdomView;
+}
+
+const { data, view } = Astro.props;
+const { story } = data;
+const remaining = view.storyDaysRemaining;
+const total = story.hollowingTotalDays;
+const arrived = remaining === 0;
+const pips = Array.from({ length: total }, (_, i) => i + 1);
+---
+
+<section class="section hollowing" id="hollowing" aria-labelledby="hollowing-title">
+  <div class="hollow-mist" aria-hidden="true"></div>
+  <div class="container hollow-inner">
+    <div class="countdown reveal">
+      <figure class="hollow-art">
+        <Picture
+          src={hollowingArt}
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          widths={[480, 800, 1200, 1670]}
+          sizes="(min-width: 960px) 40rem, calc(100vw - 32px)"
+          alt="King Mesmer raises a blazing sword as cheering Zaunites gather around him, while the glowing purple eyes of the Hollowing loom over the castle. A banner reads: Help King Mesmer and the Zaunites fend off the Hollowing!"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+      <p class="eyebrow hollow-eyebrow">A darkness approaches</p>
+      <h2 class="hollow-title" id="hollowing-title">
+        <span class="hollow-name">The Hollowing</span>
+        {
+          arrived ? (
+            <span class="hollow-days">has arrived</span>
+          ) : (
+            <>
+              <span class="hollow-number">{remaining}</span>
+              <span class="hollow-days">Story {remaining === 1 ? 'Day Remains' : 'Days Remain'}</span>
+            </>
+          )
+        }
+      </h2>
+
+      <ol class="pips" aria-hidden="true">
+        {pips.map((day) => <li class={day <= view.storyDaysPublished ? 'pip pip--spent' : 'pip'} />)}
+      </ol>
+      <p class="visually-hidden">
+        {view.storyDaysPublished} of {total} story days have passed.
+      </p>
+
+      <p class="hollow-explain">
+        This is a countdown in <strong>story time</strong>, not real time. It only moves when a verified,
+        officially published story-day episode is recorded, never at midnight and never just because a post goes up.
+      </p>
+    </div>
+
+    <div class="chronicle reveal">
+      <h3 class="chronicle-title">The Chronicle of Zaun</h3>
+      <ol class="chronicle-list" role="list">
+        <li class="entry entry--prophecy card">
+          <span class="badge">Day 0 · The Prophecy</span>
+          <p class="entry-title">{story.prophecy.title}</p>
+          <p class="entry-text">{story.prophecy.summary}</p>
+        </li>
+
+        {
+          story.historicalEpisodes.map((ep) => (
+            <li class="entry entry--historical card">
+              <span class="badge badge--muted">Historical episode</span>
+              <p class="entry-title">{ep.title}</p>
+              <p class="entry-text">{ep.summary}</p>
+            </li>
+          ))
+        }
+
+        {
+          story.storyDays.map((d) => (
+            <li class="entry entry--day card">
+              <span class="badge badge--crimson">Story Day {d.day}</span>
+              <p class="entry-title">{d.title}</p>
+              <p class="entry-text">
+                Published <time datetime={d.publishedOn}>{formatDate(d.publishedOn)}</time>
+              </p>
+              {d.links && Object.keys(d.links).length > 0 && (
+                <p class="entry-links">
+                  {Object.entries(d.links).map(([id, url]) => (
+                    <a href={url} rel="noopener">
+                      Watch on {platformById(id as 'youtube' | 'tiktok' | 'instagram').name}
+                    </a>
+                  ))}
+                </p>
+              )}
+            </li>
+          ))
+        }
+
+        {
+          !arrived && (
+            <li class="entry entry--upcoming">
+              <span class="badge badge--muted">Story Day {view.storyDaysPublished + 1}</span>
+              <p class="entry-text">Not yet published. The next chapter is still to come.</p>
+            </li>
+          )
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hollowing {
+    overflow: hidden;
+    background:
+      radial-gradient(80% 60% at 50% 30%, rgba(91, 33, 182, 0.28), transparent 70%),
+      linear-gradient(180deg, #07050f 0%, #0d0716 50%, #07050f 100%);
+    border-block: 1px solid rgba(255, 133, 151, 0.15);
+  }
+
+  .hollow-mist {
+    position: absolute;
+    inset: -20%;
+    background:
+      radial-gradient(40% 30% at 20% 30%, rgba(139, 92, 246, 0.18), transparent 70%),
+      radial-gradient(35% 25% at 80% 70%, rgba(179, 32, 58, 0.16), transparent 70%);
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hollow-mist {
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+  }
+
+  @keyframes drift {
+    from {
+      transform: translate3d(-3%, -2%, 0) rotate(-2deg);
+    }
+    to {
+      transform: translate3d(3%, 2%, 0) rotate(2deg);
+    }
+  }
+
+  .hollow-inner {
+    position: relative;
+    display: grid;
+    gap: clamp(36px, 6vw, 56px);
+  }
+
+  @media (min-width: 960px) {
+    .hollow-inner {
+      grid-template-columns: 1.1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .hollow-art {
+    margin: 0 0 6px;
+    width: 100%;
+    max-width: 40rem;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid rgba(139, 92, 246, 0.45);
+    box-shadow:
+      0 0 40px rgba(139, 92, 246, 0.25),
+      var(--shadow);
+  }
+
+  .hollow-art :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .countdown {
+    text-align: center;
+    display: grid;
+    gap: 18px;
+    justify-items: center;
+  }
+
+  .hollow-eyebrow {
+    color: var(--crimson-text);
+  }
+
+  .hollow-title {
+    display: grid;
+    gap: 6px;
+    justify-items: center;
+  }
+
+  .hollow-name {
+    font-size: clamp(1.9rem, 8vw, 3rem);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #e9ddff;
+    text-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+  }
+
+  .hollow-number {
+    font-size: clamp(5.5rem, 30vw, 9rem);
+    line-height: 0.95;
+    color: var(--crimson-text);
+    text-shadow:
+      0 0 30px rgba(179, 32, 58, 0.7),
+      0 0 80px rgba(179, 32, 58, 0.4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hollow-days {
+    font-size: clamp(1.1rem, 5vw, 1.6rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .pips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+    width: min(100%, 22rem);
+  }
+
+  .pip {
+    aspect-ratio: 1;
+    border-radius: 4px;
+    transform: rotate(45deg) scale(0.5);
+    background: linear-gradient(135deg, #e9ddff, var(--hollow));
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+  }
+
+  .pip--spent {
+    background: #1a1326;
+    box-shadow: none;
+    border: 1px solid rgba(139, 92, 246, 0.4);
+  }
+
+  .hollow-explain {
+    max-width: 32rem;
+    color: var(--text-muted);
+  }
+
+  .hollow-explain strong {
+    color: #e9ddff;
+  }
+
+  .chronicle {
+    display: grid;
+    gap: 16px;
+  }
+
+  .chronicle-title {
+    font-size: 1.4rem;
+    text-align: center;
+    color: var(--gold);
+  }
+
+  @media (min-width: 960px) {
+    .chronicle-title {
+      text-align: left;
+    }
+  }
+
+  .chronicle-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .entry {
+    padding: 16px 18px;
+    display: grid;
+    gap: 6px;
+    justify-items: start;
+  }
+
+  .entry--prophecy {
+    border-color: var(--border);
+    background: linear-gradient(135deg, rgba(240, 200, 106, 0.1), var(--surface));
+  }
+
+  .entry--day {
+    border-color: rgba(255, 133, 151, 0.3);
+  }
+
+  .entry--upcoming {
+    border: 1px dashed var(--border-soft);
+    border-radius: var(--radius);
+  }
+
+  .entry-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .entry-text {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  .entry-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    font-size: 0.95rem;
+  }
+
+  .entry-links a {
+    display: inline-block;
+    padding-block: 8px;
+  }
+</style>
