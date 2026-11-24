@@ -40,3 +40,6 @@ jobs:
 
       - name: Build
         run: npx astro build
+
+      - name: Check built site (link previews and figures)
+        run: npm run test:build

@@ -5,11 +5,13 @@ import { SITE } from '../lib/site.ts';
 interface Props {
   title?: string;
   description?: string;
+  /** For pages that shouldn't appear in search results or claim an address (e.g. the 404 page). */
+  noindex?: boolean;
 }
 
-const { title = SITE.title, description = SITE.description } = Astro.props;
+const { title = SITE.title, description = SITE.description, noindex = false } = Astro.props;
 const OG_IMAGE_ALT = 'The ZAUNITED banner: King Mesmer raises a glowing sword among cheering Zaunites.';
-const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const canonical = Astro.site && !noindex ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 const ogImage = Astro.site ? new URL('/og-image.jpg', Astro.site).href : undefined;
 ---
 
@@ -29,12 +31,13 @@ const ogImage = Astro.site ? new URL('/og-image.jpg', Astro.site).href : undefin
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content={SITE.name} />
     {
-      /* Share previews need absolute URLs, so they switch on once `site` (the SITE_URL build variable) is set. */
+      /* Share previews need absolute URLs, built from `site` in astro.config.mjs. */
       ogImage && (
         <>
-          <meta property="og:url" content={canonical} />
-          <link rel="canonical" href={canonical} />
+          {canonical && <meta property="og:url" content={canonical} />}
+          {canonical && <link rel="canonical" href={canonical} />}
           <meta property="og:image" content={ogImage} />
+          <meta property="og:image:type" content="image/jpeg" />
           <meta property="og:image:width" content="1200" />
           <meta property="og:image:height" content="630" />
           <meta property="og:image:alt" content={OG_IMAGE_ALT} />
@@ -42,6 +45,7 @@ const ogImage = Astro.site ? new URL('/og-image.jpg', Astro.site).href : undefin
       )
     }
     <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    {noindex && <meta name="robots" content="noindex" />}
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

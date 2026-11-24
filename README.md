@@ -2,6 +2,8 @@
 
 **From nothing, we shall rise.**
 
+🌐 **Live:** <https://zaunited-portal.pages.dev>
+
 The official community portal for the Kingdom of Zaun. Join the realm, watch the
 kingdom grow and help shape its future.
 
@@ -56,7 +58,7 @@ Requires Node.js 22.23 or newer.
 ```sh
 npm install
 npm run dev        # local preview at http://localhost:4321
-npm run verify     # validate data + tests + type-check + build (same as CI)
+npm run verify     # validate data + tests + type-check + build + built-site tests (same as CI)
 ```
 
 | Command | What it does |
@@ -65,6 +67,7 @@ npm run verify     # validate data + tests + type-check + build (same as CI)
 | `npm test` | Runs the unit tests |
 | `npm run check` | Type-checks the project |
 | `npm run build` | Validates the data, then builds the site into `dist/` |
+| `npm run test:build` | After a build: checks link-preview tags and the figures shown on the page |
 
 ## Roadmap
 

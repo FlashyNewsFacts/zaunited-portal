@@ -21,8 +21,8 @@ version**, so a typo can never break the portal or show a wrong number.
 5. Write a short message, e.g. `Census 23 Nov: YT 4, TT 7, IG 2`.
 6. Choose **"Create a new branch and start a pull request"**, then open the pull request.
 7. Wait for the green ✔ check on the pull request (about a minute), then
-   **merge** it. Once the site is deployed (a later step, not yet switched on),
-   merging updates the live portal.
+   **merge** it. The live portal (<https://zaunited-portal.pages.dev>)
+   updates automatically about 1–2 minutes later.
 
 If the check shows a red ✖, tap **Details**. The message says exactly
 what to fix. Edit the file again on the same branch.
