@@ -15,8 +15,11 @@ week.
 - The site is fully static, ships no JavaScript and blocks all scripts via
   Content-Security-Policy (`public/_headers`).
 - No accounts, forms, cookies, analytics or personal data.
-- No secrets in the repository. Any future credentials will live only in the
-  hosting provider's encrypted environment settings.
+- No secrets in the repository. The only credential is `YOUTUBE_API_KEY`, a
+  read-only key restricted to the YouTube Data API, stored as an encrypted
+  GitHub Actions secret. It's sent in a request header (never a URL) and is
+  available only to the "Record census" workflow, which can open pull
+  requests but cannot merge them.
 - CI runs with read-only permissions and no secrets, so pull requests from
   forks can't access credentials.
 

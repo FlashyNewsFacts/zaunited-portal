@@ -47,7 +47,9 @@ pull requests when it builds previews. If pull requests show only the
 
 ## Everyday tasks (iPad)
 
-- **Update the census or record a story day:** follow
+- **Record a census:** the iPad form in [CENSUS.md](CENSUS.md) opens a pull
+  request; merging it publishes the new figures.
+- **Record a story day / manual edits:** follow
   [UPDATING-THE-KINGDOM.md](UPDATING-THE-KINGDOM.md). Merging into `main` publishes it.
 - **See what's live:** dash.cloudflare.com → Workers & Pages → `zaunited-portal` → **Deployments**.
 - **Undo a bad update:** Deployments → choose an earlier deployment → **⋯ → Rollback to this deployment**.

@@ -8,6 +8,9 @@ export const SITE = {
     'Join the Kingdom of Zaun. Follow King Mesmer’s journey, watch the kingdom grow and help it rise before the Hollowing arrives.',
 } as const;
 
+/** ZAUNITED's YouTube channel ID (for @zaunited1), used by the census workflow. */
+export const YOUTUBE_CHANNEL_ID = 'UCotneR-TRuRxVBu4AU8-cxQ';
+
 export interface Platform {
   id: PlatformId;
   name: string;

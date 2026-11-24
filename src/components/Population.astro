@@ -1,7 +1,7 @@
 ---
 import PlatformIcon from './PlatformIcon.astro';
 import { PLATFORMS } from '../lib/site.ts';
-import { formatDate, type KingdomData, type KingdomView } from '../lib/kingdom.ts';
+import { CENSUS_WINDOW_HOURS, formatVerification, type KingdomData, type KingdomView } from '../lib/kingdom.ts';
 
 interface Props {
   data: KingdomData;
@@ -13,6 +13,11 @@ const nothingVerified = view.verifiedPlatforms.length === 0;
 const partial = !nothingVerified && view.awaitingPlatforms.length > 0;
 const awaitingNames = PLATFORMS.filter((p) => view.awaitingPlatforms.includes(p.id)).map((p) => p.name);
 const number = new Intl.NumberFormat('en-GB');
+const METHOD_LABEL = { automatic: 'Automatic', manual: 'Manual check' } as const;
+const METHOD_HINT = {
+  automatic: 'Read automatically from the platform’s official data',
+  manual: 'Checked by hand by the ZAUNITED team',
+} as const;
 ---
 
 <section class="section population" id="population" aria-labelledby="population-title">
@@ -58,11 +63,20 @@ const number = new Intl.NumberFormat('en-GB');
         unique people.
       </p>
 
+      {
+        !nothingVerified && !partial && !view.censusFresh && (
+          <p class="census-partial">
+            The three platforms were last checked at different times. New milestones unlock only when all
+            three are checked within {CENSUS_WINDOW_HOURS} hours of each other.
+          </p>
+        )
+      }
+
       <p class="census-updated">
         {
-          view.lastVerifiedOn ? (
+          view.lastVerifiedAt ? (
             <>
-              Last verified: <time datetime={view.lastVerifiedOn}>{formatDate(view.lastVerifiedOn)}</time>
+              Last verified: <time datetime={view.lastVerifiedAt}>{formatVerification(view.lastVerifiedAt)}</time>
             </>
           ) : (
             'Last verified: awaiting the first census'
@@ -83,6 +97,11 @@ const number = new Intl.NumberFormat('en-GB');
                   <PlatformIcon id={platform.id} size={22} />
                 </span>
                 <span class="platform-name">{platform.name}</span>
+                {verified && record.method && (
+                  <span class={`badge method-badge method-badge--${record.method}`} title={METHOD_HINT[record.method]}>
+                    {METHOD_LABEL[record.method]}
+                  </span>
+                )}
               </div>
               {verified ? (
                 <p class="platform-count">
@@ -92,10 +111,11 @@ const number = new Intl.NumberFormat('en-GB');
                 <p class="platform-count platform-count--awaiting">Awaiting verification</p>
               )}
               <p class="platform-source">
-                {verified && record.verifiedOn ? (
+                {verified && record.verifiedAt ? (
                   <>
-                    Source: {record.source} · Verified{' '}
-                    <time datetime={record.verifiedOn}>{formatDate(record.verifiedOn)}</time>
+                    Source: {record.source}
+                    <br />
+                    Verified <time datetime={record.verifiedAt}>{formatVerification(record.verifiedAt)}</time>
                   </>
                 ) : (
                   <>No verified {platform.metric} figure yet.</>
@@ -108,8 +128,9 @@ const number = new Intl.NumberFormat('en-GB');
     </ul>
 
     <p class="method">
-      Counts are checked by the ZAUNITED team on each platform and recorded with their source and date. They are
-      updated by hand, so they are not live.
+      Each count shows where it came from and when it was checked. <strong>Automatic</strong> counts are read
+      from the platform’s official data; <strong>manual</strong> counts are checked by the ZAUNITED team. Every
+      update is reviewed before it is published, so the figures are not live.
     </p>
   </div>
 </section>
@@ -227,6 +248,18 @@ const number = new Intl.NumberFormat('en-GB');
     --icon-cutout: #2a1d4c;
   }
 
+  .method-badge {
+    margin-left: auto;
+    font-size: 0.66rem;
+    padding: 3px 9px;
+  }
+
+  .method-badge--manual {
+    color: var(--text-muted);
+    border-color: var(--border-soft);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
   .platform-name {
     font-family: var(--font-display);
     font-weight: 700;
@@ -256,6 +289,10 @@ const number = new Intl.NumberFormat('en-GB');
   .platform-source {
     font-size: 0.875rem;
     color: var(--text-faint);
+  }
+
+  .method strong {
+    color: var(--text-muted);
   }
 
   .method {

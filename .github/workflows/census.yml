@@ -1,0 +1,124 @@
+name: Record census
+
+# The iPad census form: Actions → "Record census" → Run workflow.
+# Guide: docs/CENSUS.md
+#
+# It reads YouTube automatically (YouTube Data API), takes the TikTok and
+# Instagram counts you type in, runs every check, and opens a pull request.
+# It never merges, never changes main and never publishes anything: the site
+# only changes when you merge the pull request.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tiktok_followers:
+        description: 'TikTok followers (the number on the ZAUNITED TikTok profile)'
+        required: true
+        type: string
+      tiktok_source:
+        description: 'Where you read the TikTok count'
+        required: true
+        type: choice
+        default: TikTok profile
+        options:
+          - TikTok profile
+          - TikTok app
+          - Metricool
+      instagram_followers:
+        description: 'Instagram followers (the number on the ZAUNITED Instagram profile)'
+        required: true
+        type: string
+      instagram_source:
+        description: 'Where you read the Instagram count'
+        required: true
+        type: choice
+        default: Instagram profile
+        options:
+          - Instagram profile
+          - Instagram app
+          - Metricool
+      youtube_subscribers:
+        description: 'YouTube subscribers: leave BLANK (read automatically). Fill in from YouTube Studio only if the automatic count fails.'
+        required: false
+        type: string
+        default: ''
+
+# No permissions by default; the job below asks only for what it needs.
+permissions: {}
+
+concurrency:
+  group: census
+  cancel-in-progress: false
+
+jobs:
+  census:
+    name: Prepare census pull request
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # push the new census branch (never main)
+      pull-requests: write # open the census pull request
+      actions: write # start the standard CI check on the census branch
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # Form values reach the script only as environment variables (never
+      # pasted into shell commands), and the script checks them strictly.
+      - name: Read counts and prepare the census
+        id: census
+        env:
+          TIKTOK_FOLLOWERS: ${{ inputs.tiktok_followers }}
+          TIKTOK_SOURCE: ${{ inputs.tiktok_source }}
+          INSTAGRAM_FOLLOWERS: ${{ inputs.instagram_followers }}
+          INSTAGRAM_SOURCE: ${{ inputs.instagram_source }}
+          YOUTUBE_SUBSCRIBERS: ${{ inputs.youtube_subscribers }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          CENSUS_SUMMARY_FILE: ${{ runner.temp }}/census-summary.md
+        run: node scripts/census.ts
+
+      - name: Verify the proposed census (data rules, tests, type-check, build, built site)
+        run: npm run verify
+
+      - name: Open the census pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: ${{ steps.census.outputs.title }}
+          SUMMARY_FILE: ${{ runner.temp }}/census-summary.md
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          branch="census/$(date -u +%Y-%m-%d-%H%M%S)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add data/kingdom.json
+          git commit -m "$TITLE" -m "Prepared by the Record census workflow: $RUN_URL"
+          git push origin "$branch"
+
+          {
+            cat "$SUMMARY_FILE"
+            echo
+            echo "---"
+            echo "✅ **Checked before this pull request was opened:** data rules, unit tests, type-check, build and built-site tests ([census run]($RUN_URL))."
+            echo
+            echo "The standard CI check is also run on this branch. Wait for **Validate data, test, type-check and build** to turn green before merging."
+          } > "$RUNNER_TEMP/pr-body.md"
+
+          if ! gh pr create --base main --head "$branch" --title "$TITLE" --body-file "$RUNNER_TEMP/pr-body.md"; then
+            echo "::error::Could not open the pull request. In Settings → Actions → General, tick 'Allow GitHub Actions to create and approve pull requests', then open a pull request from branch $branch (it is already pushed)."
+            exit 1
+          fi
+
+          # Pull requests opened by this workflow don't start CI on their own,
+          # so start the standard check on the census branch explicitly.
+          gh workflow run ci.yml --ref "$branch"

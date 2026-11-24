@@ -10,6 +10,10 @@ version**, so a typo can never break the portal or show a wrong number.
 > **Golden rule:** only enter numbers you have checked yourself on the platform
 > (or in Metricool), on the day you enter them.
 
+> **For follower counts, use the census form instead:** see
+> [CENSUS.md](CENSUS.md). It reads YouTube automatically and needs no file
+> editing. This guide is the **manual fallback**, and the way to record story days.
+
 ---
 
 ## How to edit the file (Safari on iPad/iPhone)
@@ -31,41 +35,38 @@ what to fix. Edit the file again on the same branch.
 - Use straight quotes `"like this"`. If your keyboard inserts curly quotes
   (`“like this”`), turn off **Settings → General → Keyboard → Smart Punctuation**.
 - Numbers have **no quotes**: `"count": 12` ✔ `"count": "12"` ✖
-- Dates are always `"YYYY-MM-DD"`, e.g. `"2026-11-23"`.
+- Dates are `"YYYY-MM-DD"`, e.g. `"2026-11-24"`.
 - Keep the commas between items exactly as they are.
 
 ---
 
-## Recipe 1: Record follower figures (the census)
+## Recipe 1: Record follower figures by hand (fallback)
 
-Each platform looks like this:
-
-```json
-"youtube": {
-  "count": null,
-  "verifiedOn": null,
-  "source": null
-},
-```
-
-To record a verified count, replace all three `null` values:
+Normally you'd use the census form ([CENSUS.md](CENSUS.md)). If you can't, each
+platform looks like this:
 
 ```json
 "youtube": {
-  "count": 4,
-  "verifiedOn": "2026-11-23",
-  "source": "YouTube Studio"
+  "count": 7,
+  "verifiedAt": "2026-11-24",
+  "source": "YouTube Studio",
+  "method": "manual"
 },
 ```
 
 | Field        | What to write                                                                   |
 | ------------ | ------------------------------------------------------------------------------- |
 | `count`      | The exact number you saw, with no quotes and no commas (`1250`, not `1,250`)     |
-| `verifiedOn` | The date you checked it                                                          |
-| `source`     | Where you read it: `"YouTube Studio"`, `"TikTok app"`, `"Instagram app"`, `"Metricool dashboard"` |
+| `verifiedAt` | When you checked it: a date like `"2026-11-24"`, or a UTC time like `"2026-11-24T08:15:00Z"` |
+| `source`     | Where you read it: `"YouTube Studio"`, `"TikTok profile"`, `"Instagram app"`, `"Metricool"` |
+| `method`     | `"manual"` when you checked it yourself (`"automatic"` is used only by the census form) |
 
-Platforms you haven't checked can stay `null`; the site then shows
-"Awaiting verification" for that platform and says the total is partial.
+**Update all three platforms together** whenever you can. A milestone can only
+be newly unlocked when all three counts were checked **within 48 hours** of
+each other.
+
+A platform you haven't checked can be `null` in all four fields; the site then
+shows "Awaiting verification" for it and says the total is partial.
 
 The site adds the three counts together as **"Zaunites: Combined Platform
 Follows"** and always explains that one person may be counted more than once.
@@ -74,23 +75,25 @@ Follows"** and always explains that one person may be counted more than once.
 
 ## Recipe 2: Unlock a milestone (required when one is reached)
 
-Unlocks are **permanent**. When the combined total reaches a milestone, the
-check will **fail** until you record the date it was reached. This prevents a
-milestone from silently re-locking if follower counts dip later.
+The census form does this for you. By hand: unlocks are **permanent**. When
+the combined total reaches a milestone (with all three counts checked within
+48 hours), the check will **fail** until you record the date. This prevents
+a milestone from silently re-locking if follower counts dip later.
 
-Find the milestone and replace its `null`:
+Find the milestone and replace its `null` with the census date:
 
 ```json
 {
-  "population": 10,
-  "title": "A Small Settlement",
-  "description": "Tents and campfires gather around the ruined throne.",
-  "unlockedOn": "2026-11-23"
+  "population": 25,
+  "title": "The Village of Zaun",
+  "description": "Homes rise from the rubble and the first lanterns are lit.",
+  "unlockedOn": "2026-12-01"
 }
 ```
 
-Do this **in the same edit** as the census update that reached it. Never remove
-an `unlockedOn` date once it has been set.
+This is the date the unlock was **recorded** (shown as "Unlock recorded …"),
+not the day the follower arrived. Do this **in the same edit** as the census
+update that reached it. Never remove or change an `unlockedOn` date once set.
 
 ### Adding a new milestone later
 

@@ -10,14 +10,25 @@
 export const PLATFORM_IDS = ['youtube', 'tiktok', 'instagram'] as const;
 export type PlatformId = (typeof PLATFORM_IDS)[number];
 
+export const VERIFICATION_METHODS = ['automatic', 'manual'] as const;
+export type VerificationMethod = (typeof VERIFICATION_METHODS)[number];
+
 export interface PlatformRecord {
   /** Verified follower/subscriber count, or null while awaiting verification. */
   count: number | null;
-  /** Date the count was checked, as YYYY-MM-DD. */
-  verifiedOn: string | null;
-  /** Where the count was read from, e.g. "YouTube Studio" or "Metricool dashboard". */
+  /**
+   * When the count was checked: a UTC timestamp ("2026-11-24T08:15:00Z") from
+   * the census form, or just a date ("2026-11-24") when the time is unknown.
+   */
+  verifiedAt: string | null;
+  /** Where the count was read from, e.g. "YouTube Data API" or "TikTok profile". */
   source: string | null;
+  /** "automatic" (read by the census workflow from an official API) or "manual" (checked by the team). */
+  method: VerificationMethod | null;
 }
+
+/** A newly unlocked milestone needs all three counts verified within this many hours of each other. */
+export const CENSUS_WINDOW_HOURS = 48;
 
 export interface MilestoneRecord {
   population: number;
@@ -51,7 +62,9 @@ export interface ValidationResult {
 }
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIMESTAMP_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const HOUR_MS = 60 * 60 * 1000;
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -61,6 +74,48 @@ function isRealDate(value: unknown): value is string {
   if (typeof value !== 'string' || !DATE_RE.test(value)) return false;
   const parsed = new Date(`${value}T00:00:00Z`);
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
+/** A date ("2026-11-24") or a UTC timestamp ("2026-11-24T08:15:00Z"). */
+function isVerificationTime(value: unknown): value is string {
+  if (typeof value !== 'string') return false;
+  if (DATE_RE.test(value)) return isRealDate(value);
+  if (!TIMESTAMP_RE.test(value)) return false;
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().replace('.000Z', 'Z') === value;
+}
+
+/**
+ * The earliest and latest moment a verification could have happened. A bare
+ * date covers the whole day, so comparisons stay on the safe side.
+ */
+export function verificationRange(value: string): { start: number; end: number } {
+  if (DATE_RE.test(value)) {
+    const start = new Date(`${value}T00:00:00Z`).getTime();
+    return { start, end: start + ONE_DAY_MS - 1 };
+  }
+  const t = new Date(value).getTime();
+  return { start: t, end: t };
+}
+
+export interface CensusSpread {
+  /** True when every platform has a verified count and all were checked within CENSUS_WINDOW_HOURS. */
+  fresh: boolean;
+  /** Earliest possible verification moment across platforms (ms), or null if none verified. */
+  oldest: number | null;
+  /** Latest possible verification moment across platforms (ms), or null if none verified. */
+  newest: number | null;
+}
+
+export function censusSpread(population: Record<PlatformId, PlatformRecord>): CensusSpread {
+  const ranges = PLATFORM_IDS.map((id) => population[id])
+    .filter((p) => p && p.count !== null && isVerificationTime(p.verifiedAt))
+    .map((p) => verificationRange(p.verifiedAt as string));
+  if (ranges.length === 0) return { fresh: false, oldest: null, newest: null };
+  const oldest = Math.min(...ranges.map((r) => r.start));
+  const newest = Math.max(...ranges.map((r) => r.end));
+  const fresh = ranges.length === PLATFORM_IDS.length && newest - oldest <= CENSUS_WINDOW_HOURS * HOUR_MS;
+  return { fresh, oldest, newest };
 }
 
 /** True when the date is after "today" (one day of slack covers UK vs UTC midnight). */
@@ -110,23 +165,32 @@ export function validateKingdom(raw: unknown, today: Date = new Date()): Validat
         errors.push(`"${where}" is missing.`);
         continue;
       }
-      const { count, verifiedOn, source } = p;
+      if ('verifiedOn' in p) {
+        errors.push(`${where}.verifiedOn has been renamed to "verifiedAt" (same date format).`);
+      }
+      const { count, verifiedAt, source, method } = p;
       if (count === null) {
-        if (verifiedOn !== null || source !== null) {
-          warnings.push(`${where}: count is null, so verifiedOn and source are ignored.`);
+        if (verifiedAt !== null || source !== null || method !== null) {
+          warnings.push(`${where}: count is null, so verifiedAt, source and method are ignored.`);
         }
         continue;
       }
       if (typeof count !== 'number' || !Number.isInteger(count) || count < 0) {
         errors.push(`${where}.count must be a whole number (0 or more) or null. Found: ${JSON.stringify(count)}. Do not put quotes around numbers.`);
       }
-      if (!isRealDate(verifiedOn)) {
-        errors.push(`${where}.verifiedOn must be the date you checked the count, written like "2026-11-23".`);
-      } else if (isFutureDate(verifiedOn, today)) {
-        errors.push(`${where}.verifiedOn (${verifiedOn}) is in the future.`);
+      if (!isVerificationTime(verifiedAt)) {
+        errors.push(
+          `${where}.verifiedAt must be when you checked the count: a date like "2026-11-24", ` +
+            `or a UTC time like "2026-11-24T08:15:00Z".`,
+        );
+      } else if (verificationRange(verifiedAt).start > today.getTime() + ONE_DAY_MS) {
+        errors.push(`${where}.verifiedAt (${verifiedAt}) is in the future.`);
       }
       if (!isNonEmptyText(source, 120)) {
         errors.push(`${where}.source must say where the count came from (for example "YouTube Studio"), up to 120 characters.`);
+      }
+      if (!(VERIFICATION_METHODS as readonly unknown[]).includes(method)) {
+        errors.push(`${where}.method must be "automatic" or "manual".`);
       }
     }
     for (const key of Object.keys(population)) {
@@ -141,9 +205,17 @@ export function validateKingdom(raw: unknown, today: Date = new Date()): Validat
   if (!Array.isArray(milestones) || milestones.length === 0) {
     errors.push('"milestones" must be a list with at least one milestone.');
   } else {
-    const total = isObject(population)
-      ? combinedTotal(population as unknown as Record<PlatformId, PlatformRecord>)
-      : 0;
+    const typedPopulation = isObject(population)
+      ? (population as unknown as Record<PlatformId, PlatformRecord>)
+      : null;
+    const total = typedPopulation ? combinedTotal(typedPopulation) : 0;
+    const spread = typedPopulation ? censusSpread(typedPopulation) : { fresh: false, oldest: null, newest: null };
+    // Unlocks recorded from (newest census − window) onwards count as "new" and
+    // must be backed by a fresh census: all three counts within the window.
+    const recentFrom =
+      spread.newest === null
+        ? null
+        : new Date(spread.newest - CENSUS_WINDOW_HOURS * HOUR_MS).toISOString().slice(0, 10);
     let previousPopulation = 0;
     let previousUnlocked = true;
     let previousUnlockedOn: string | null = null;
@@ -169,10 +241,17 @@ export function validateKingdom(raw: unknown, today: Date = new Date()): Validat
       const unlockedOn = m.unlockedOn;
       if (unlockedOn === null) {
         if (total >= m.population) {
-          errors.push(
-            `${label} has been reached (combined total ${total} ≥ ${m.population}) but is not recorded. ` +
-              `Unlocks are permanent, so add the date to this milestone: "unlockedOn": "YYYY-MM-DD".`,
-          );
+          if (spread.fresh) {
+            errors.push(
+              `${label} has been reached (combined total ${total} ≥ ${m.population}) but is not recorded. ` +
+                `Unlocks are permanent, so add the date to this milestone: "unlockedOn": "YYYY-MM-DD".`,
+            );
+          } else {
+            warnings.push(
+              `${label} appears reached (combined total ${total}), but the three counts were not all verified ` +
+                `within ${CENSUS_WINDOW_HOURS} hours of each other. Run a full census before recording the unlock.`,
+            );
+          }
         }
         previousUnlocked = false;
         return;
@@ -187,6 +266,12 @@ export function validateKingdom(raw: unknown, today: Date = new Date()): Validat
       }
       if (previousUnlockedOn && unlockedOn < previousUnlockedOn) {
         errors.push(`${label}: unlockedOn (${unlockedOn}) is earlier than the milestone before it (${previousUnlockedOn}).`);
+      }
+      if (recentFrom !== null && unlockedOn >= recentFrom && !spread.fresh) {
+        errors.push(
+          `${label} was unlocked on ${unlockedOn}, but the counts behind it were not all verified within ` +
+            `${CENSUS_WINDOW_HOURS} hours of each other. Record a full census (all three platforms) first.`,
+        );
       }
       if (total < m.population) {
         warnings.push(
@@ -278,8 +363,10 @@ export interface KingdomView {
   combined: number;
   verifiedPlatforms: PlatformId[];
   awaitingPlatforms: PlatformId[];
-  /** Most recent verifiedOn across platforms, or null if nothing is verified yet. */
-  lastVerifiedOn: string | null;
+  /** Most recent verifiedAt across platforms, or null if nothing is verified yet. */
+  lastVerifiedAt: string | null;
+  /** True when all three counts were verified within CENSUS_WINDOW_HOURS of each other. */
+  censusFresh: boolean;
   milestones: MilestoneView[];
   nextMilestone: MilestoneView | null;
   latestUnlocked: MilestoneView | null;
@@ -294,11 +381,12 @@ export function deriveKingdom(data: KingdomData): KingdomView {
   const awaitingPlatforms = PLATFORM_IDS.filter((id) => data.population[id].count === null);
   const combined = combinedTotal(data.population);
 
-  const dates = verifiedPlatforms
-    .map((id) => data.population[id].verifiedOn)
+  const times = verifiedPlatforms
+    .map((id) => data.population[id].verifiedAt)
     .filter((d): d is string => typeof d === 'string')
-    .sort();
-  const lastVerifiedOn = dates.at(-1) ?? null;
+    .sort((a, b) => verificationRange(a).end - verificationRange(b).end);
+  const lastVerifiedAt = times.at(-1) ?? null;
+  const censusFresh = censusSpread(data.population).fresh;
 
   let foundNext = false;
   const milestones: MilestoneView[] = data.milestones.map((m) => {
@@ -323,7 +411,8 @@ export function deriveKingdom(data: KingdomData): KingdomView {
     combined,
     verifiedPlatforms,
     awaitingPlatforms,
-    lastVerifiedOn,
+    lastVerifiedAt,
+    censusFresh,
     milestones,
     nextMilestone,
     latestUnlocked,
@@ -341,4 +430,34 @@ export function formatDate(isoDate: string): string {
     year: 'numeric',
     timeZone: 'UTC',
   });
+}
+
+/** UK calendar date (Europe/London) of a moment, as "YYYY-MM-DD". */
+export function londonDate(moment: Date): string {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(moment);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value;
+  return `${get('year')}-${get('month')}-${get('day')}`;
+}
+
+/**
+ * Formats a verification time for visitors, in UK time:
+ * "2026-11-24" → "24 November 2026"; "2026-11-24T08:15:00Z" → "24 November 2026, 08:15 GMT".
+ */
+export function formatVerification(value: string): string {
+  if (DATE_RE.test(value)) return formatDate(value);
+  const moment = new Date(value);
+  const date = formatDate(londonDate(moment));
+  const time = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZoneName: 'short',
+  }).format(moment);
+  return `${date}, ${time}`;
 }
