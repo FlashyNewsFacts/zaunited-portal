@@ -1,24 +1,25 @@
 {
   "_readme": "Kingdom records for the ZAUNITED Kingdom Portal. Edit carefully: see docs/UPDATING-THE-KINGDOM.md. Never enter a number you have not verified yourself.",
-
   "population": {
     "youtube": {
       "count": 7,
-      "verifiedOn": "2026-11-24",
-      "source": "YouTube Studio / Metricool"
+      "verifiedAt": "2026-11-24",
+      "source": "YouTube Studio / Metricool",
+      "method": "manual"
     },
     "tiktok": {
       "count": 3,
-      "verifiedOn": "2026-11-24",
-      "source": "TikTok profile"
+      "verifiedAt": "2026-11-24",
+      "source": "TikTok profile",
+      "method": "manual"
     },
     "instagram": {
       "count": 1,
-      "verifiedOn": "2026-11-24",
-      "source": "Instagram profile"
+      "verifiedAt": "2026-11-24",
+      "source": "Instagram profile",
+      "method": "manual"
     }
   },
-
   "milestones": [
     {
       "population": 1,
@@ -51,7 +52,6 @@
       "unlockedOn": null
     }
   ],
-
   "story": {
     "hollowingTotalDays": 30,
     "prophecy": {

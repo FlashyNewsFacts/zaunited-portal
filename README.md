@@ -39,7 +39,10 @@ no secrets.
 
 All kingdom records (population, milestone unlocks, story days) live in
 [`data/kingdom.json`](data/kingdom.json). Every change is validated before the
-site builds. 👉 **[How to update the kingdom from an iPad](docs/UPDATING-THE-KINGDOM.md)**
+site builds.
+
+- 👉 **[Record a census from an iPad](docs/CENSUS.md)**: the census form reads YouTube automatically, you type in TikTok and Instagram, and it opens a pull request for you to approve.
+- 👉 **[Edit the records by hand / record story days](docs/UPDATING-THE-KINGDOM.md)**
 
 ```
 data/kingdom.json        ← the kingdom's records (edit this)
@@ -68,6 +71,7 @@ npm run verify     # validate data + tests + type-check + build + built-site tes
 | `npm run check` | Type-checks the project |
 | `npm run build` | Validates the data, then builds the site into `dist/` |
 | `npm run test:build` | After a build: checks link-preview tags and the figures shown on the page |
+| `node scripts/census.ts` | Prepares a census (used by the "Record census" workflow; see `docs/CENSUS.md`) |
 
 ## Roadmap
 

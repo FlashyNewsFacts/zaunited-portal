@@ -7,7 +7,8 @@ Public, mobile-first fantasy kingdom site for ZAUNITED (Astro, static output).
 - Current priority and only authorised scope: **M0–M1 portal MVP**. Don't start M2+ portal features, community voting, episode production or StoryForge changes without separate explicit approval.
 
 ## Hard rules
-- Never invent follower/subscriber figures. Counts come only from `data/kingdom.json`, entered by the team with source + date.
+- Never invent follower/subscriber figures. Counts come only from `data/kingdom.json`, via the census workflow (YouTube Data API + owner-entered TikTok/Instagram) or the owner's manual edits, each with `verifiedAt`, `source` and `method`. Never invent a verification time.
+- Every population change goes through a pull request the owner merges; no auto-merge. New unlocks need all three counts within 48 hours (`CENSUS_WINDOW_HOURS`).
 - Combined total = YouTube + TikTok + Instagram, labelled "Zaunites: Combined Platform Follows"; never call it unique people.
 - Milestone unlocks are permanent (`unlockedOn` dates are never removed).
 - The Hollowing is story time: it only advances via recorded `story.storyDays`. Prophecy = Day 0; historical Episode 1 does not count.
@@ -25,4 +26,5 @@ Public, mobile-first fantasy kingdom site for ZAUNITED (Astro, static output).
 ## Layout
 - `data/kingdom.json`: records; `src/lib/kingdom.ts`: validation + derived values (pure, shared by tests/script/page)
 - `src/components/*.astro`: page sections; `src/styles/global.css`: design tokens
-- `docs/UPDATING-THE-KINGDOM.md`: owner's iPad guide (keep in sync with validation rules)
+- `src/lib/census.ts` (pure census logic) + `scripts/census.ts` (I/O) + `.github/workflows/census.yml` (iPad form; secret `YOUTUBE_API_KEY`)
+- `docs/CENSUS.md` and `docs/UPDATING-THE-KINGDOM.md`: owner's iPad guides (keep in sync with validation rules)

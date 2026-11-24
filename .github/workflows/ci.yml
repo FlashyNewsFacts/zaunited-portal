@@ -1,11 +1,15 @@
 name: CI
 
 # Runs on every pull request and on pushes to main. It needs no secrets,
-# so pull requests from forks can be checked safely.
+# so pull requests from forks can be checked safely. It can also be started
+# by hand (Actions → CI → Run workflow); the census workflow starts it this
+# way on census branches, because pull requests opened by a workflow don't
+# trigger it automatically.
 on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
