@@ -13,11 +13,13 @@ Public, mobile-first fantasy kingdom site for ZAUNITED (Astro, static output).
 - The Hollowing is story time: it only advances via recorded `story.storyDays`. Prophecy = Day 0; historical Episode 1 does not count.
 - Keep the portal independent of StoryForge: no private code, assets, unpublished scripts or credentials.
 - No secrets in source control. Don't deploy, buy domains, connect services or change repo visibility without owner approval.
-- Hosting: free Cloudflare Pages (`zaunited.pages.dev`), production branch `main`, preview deployments off. No domain purchase. See `docs/DEPLOYMENT.md`.
+- Hosting: LIVE on free Cloudflare Pages at https://zaunited-portal.pages.dev (project `zaunited-portal`). Production branch `main` (merging publishes); preview deployments off. No domain purchase. See `docs/DEPLOYMENT.md`.
+- Don't delete or change Cloudflare resources; the owner manages them.
 - Coming-soon features (suggestions, Royal Council) must not appear to work until they are built and approved.
 
 ## Commands
-- `npm run verify`: validate data, unit tests, type-check, build (same as CI)
+- `npm run verify`: validate data, unit tests, type-check, build, built-site tests (same as CI)
+- `npm run test:build`: after a build, checks link-preview metadata and that the page shows the recorded figures
 - `npm run dev`: local dev server
 
 ## Layout
