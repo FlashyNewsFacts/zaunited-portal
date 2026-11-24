@@ -3,18 +3,18 @@
 
   "population": {
     "youtube": {
-      "count": 6,
-      "verifiedOn": "2026-11-23",
-      "source": "YouTube Studio"
+      "count": 7,
+      "verifiedOn": "2026-11-24",
+      "source": "YouTube Studio / Metricool"
     },
     "tiktok": {
-      "count": 2,
-      "verifiedOn": "2026-11-23",
+      "count": 3,
+      "verifiedOn": "2026-11-24",
       "source": "TikTok profile"
     },
     "instagram": {
       "count": 1,
-      "verifiedOn": "2026-11-23",
+      "verifiedOn": "2026-11-24",
       "source": "Instagram profile"
     }
   },
@@ -30,7 +30,7 @@
       "population": 10,
       "title": "A Small Settlement",
       "description": "Tents and campfires gather around the ruined throne.",
-      "unlockedOn": null
+      "unlockedOn": "2026-11-24"
     },
     {
       "population": 25,
