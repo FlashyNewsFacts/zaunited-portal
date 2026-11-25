@@ -124,11 +124,11 @@ released as. Day 1 looks like this:
     "title": "Season 1, Story Day 1",
     "publishedOn": "2026-11-25",
     "releases": [
-      { "platform": "youtube", "label": "Day 1 (combined episode)" },
-      { "platform": "tiktok", "label": "Part 1" },
-      { "platform": "tiktok", "label": "Part 2" },
-      { "platform": "instagram", "label": "Part 1" },
-      { "platform": "instagram", "label": "Part 2" }
+      { "platform": "youtube", "label": "Day 1 (combined episode)", "status": "published" },
+      { "platform": "tiktok", "label": "Part 1", "status": "published" },
+      { "platform": "tiktok", "label": "Part 2", "status": "planned" },
+      { "platform": "instagram", "label": "Part 1", "status": "planned" },
+      { "platform": "instagram", "label": "Part 2", "status": "planned" }
     ]
   }
 ]
@@ -137,7 +137,11 @@ released as. Day 1 looks like this:
 `releases` lists every cut of that day: these are **distribution variants of
 the same day**, so five releases still move the countdown by exactly one day.
 You can add a video link to any release, e.g.
-`{ "platform": "tiktok", "label": "Part 1", "url": "https://www.tiktok.com/@zaunited_/video/…" }`.
+`{ "platform": "tiktok", "label": "Part 1", "status": "published", "url": "https://www.tiktok.com/@zaunited_/video/…" }`.
+
+Each release has a **status**: `"planned"` until you have confirmed it is live, then
+`"published"`. The site lists published and planned versions separately, and
+changing a status never moves the countdown.
 
 For the next day, add another block after it (with a comma between):
 
@@ -147,7 +151,7 @@ For the next day, add another block after it (with a comma between):
     "title": "Season 1, Story Day 2",
     "publishedOn": "2026-11-26",
     "releases": [
-      { "platform": "youtube", "label": "Day 2 (combined episode)" }
+      { "platform": "youtube", "label": "Day 2 (combined episode)", "status": "published" }
     ]
   }
 ```

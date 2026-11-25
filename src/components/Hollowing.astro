@@ -93,32 +93,48 @@ const pips = Array.from({ length: total }, (_, i) => i + 1);
               {d.releases && d.releases.length > 0 && (
                 <div class="entry-releases">
                   <p class="entry-releases-title">
-                    One story day, {d.releases.length} {d.releases.length === 1 ? 'release' : 'releases'}:
+                    Shared across platforms: every version below is part of this one story day.
                   </p>
-                  <ul role="list">
-                    {PLATFORMS.filter((p) => d.releases?.some((r) => r.platform === p.id)).map((p) => (
-                      <li>
-                        <a href={p.videosUrl} rel="noopener">
-                          {p.name}
-                        </a>
-                        {': '}
-                        {d.releases
-                          ?.filter((r) => r.platform === p.id)
-                          .map((r, i) => (
-                            <>
-                              {i > 0 && ', '}
-                              {r.url ? (
-                                <a href={r.url} rel="noopener">
-                                  {r.label}
-                                </a>
-                              ) : (
-                                r.label
-                              )}
-                            </>
-                          ))}
-                      </li>
-                    ))}
-                  </ul>
+                  {(['published', 'planned'] as const).map((status) => {
+                    const group = d.releases?.filter((r) => r.status === status) ?? [];
+                    return (
+                      group.length > 0 && (
+                        <div class={`release-group release-group--${status}`}>
+                          <p class="release-status">
+                            {status === 'published' ? 'Published' : 'Planned (not yet confirmed)'}
+                          </p>
+                          <ul role="list">
+                            {PLATFORMS.filter((p) => group.some((r) => r.platform === p.id)).map((p) => (
+                              <li>
+                                {status === 'published' ? (
+                                  <a href={p.videosUrl} rel="noopener">
+                                    {p.name}
+                                  </a>
+                                ) : (
+                                  p.name
+                                )}
+                                {': '}
+                                {group
+                                  .filter((r) => r.platform === p.id)
+                                  .map((r, i) => (
+                                    <>
+                                      {i > 0 && ', '}
+                                      {status === 'published' && r.url ? (
+                                        <a href={r.url} rel="noopener">
+                                          {r.label}
+                                        </a>
+                                      ) : (
+                                        r.label
+                                      )}
+                                    </>
+                                  ))}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    );
+                  })}
                 </div>
               )}
               {d.links && Object.keys(d.links).length > 0 && (
@@ -352,6 +368,17 @@ const pips = Array.from({ length: total }, (_, i) => i + 1);
 
   .entry-releases-title {
     color: var(--text);
+  }
+
+  .release-status {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .release-group--planned .release-status {
+    color: var(--text-faint);
   }
 
   .entry-releases ul {

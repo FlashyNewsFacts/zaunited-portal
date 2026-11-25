@@ -46,6 +46,8 @@ export interface MilestoneRecord {
 export interface StoryReleaseRecord {
   platform: PlatformId;
   label: string;
+  /** "published" only once its publication is confirmed; otherwise "planned". */
+  status: 'planned' | 'published';
   url?: string;
 }
 
@@ -381,6 +383,9 @@ export function validateKingdom(raw: unknown, today: Date = new Date()): Validat
                 return;
               }
               if (!isNonEmptyText(r.label, 60)) errors.push(`${rw}: label is required (up to 60 characters).`);
+              if (r.status !== 'planned' && r.status !== 'published') {
+                errors.push(`${rw}: status must be "planned" or "published" (only once the release is confirmed live).`);
+              }
               const key = `${platform}|${String(r.label).trim().toLowerCase()}`;
               if (seenLabels.has(key)) errors.push(`${rw}: "${String(r.label)}" on ${platform} is listed twice for this day.`);
               seenLabels.add(key);
@@ -401,6 +406,11 @@ export function validateKingdom(raw: unknown, today: Date = new Date()): Validat
                 }
               }
             });
+            if (!d.releases.some((r: unknown) => isObject(r) && r.status === 'published')) {
+              warnings.push(
+                `${where}: none of its releases is confirmed "published" yet. Confirm the story day is live before merging.`,
+              )
+            }
           }
         }
       });

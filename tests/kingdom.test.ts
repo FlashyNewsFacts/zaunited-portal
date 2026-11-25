@@ -98,7 +98,7 @@ test('milestones stay unlocked when follower counts drop', () => {
   data.milestones[1].unlockedOn = '2026-11-10';
   const { errors, warnings } = validateKingdom(data, TODAY);
   assert.deepEqual(errors, []);
-  assert.equal(warnings.length, 1);
+  assert.equal(warnings.filter((w) => w.includes('stays unlocked')).length, 1);
   const view = deriveKingdom(data);
   assert.equal(view.milestones[1].state, 'unlocked');
   assert.equal(view.latestUnlocked?.title, 'A Small Settlement');
@@ -295,8 +295,8 @@ test('the same video cannot be recorded for two story days', () => {
   const data = load();
   const url = 'https://www.tiktok.com/@zaunited_/video/1234567890';
   data.story.storyDays = [
-    { day: 1, title: 'Day One', publishedOn: '2026-11-20', releases: [{ platform: 'tiktok', label: 'Part 1', url }] },
-    { day: 2, title: 'Day Two', publishedOn: '2026-11-21', releases: [{ platform: 'tiktok', label: 'Part 1', url }] },
+    { day: 1, title: 'Day One', publishedOn: '2026-11-20', releases: [{ platform: 'tiktok', label: 'Part 1', status: 'published', url }] },
+    { day: 2, title: 'Day Two', publishedOn: '2026-11-21', releases: [{ platform: 'tiktok', label: 'Part 1', status: 'published', url }] },
   ];
   assert.ok(errorsFor(data).some((e) => e.includes('already recorded for Story Day 1')));
 });
@@ -309,11 +309,11 @@ test('release variants are checked: known platform, unique label per day, matchi
       title: 'Day One',
       publishedOn: '2026-11-20',
       releases: [
-        { platform: 'tiktok', label: 'Part 1' },
-        { platform: 'tiktok', label: 'part 1' },
-        { platform: 'myspace', label: 'Part 1' },
-        { platform: 'instagram', label: 'Part 1', url: 'https://www.youtube.com/watch?v=abc' },
-        { platform: 'youtube', label: 'Full', url: 'javascript:alert(1)' },
+        { platform: 'tiktok', label: 'Part 1', status: 'published' },
+        { platform: 'tiktok', label: 'part 1', status: 'published' },
+        { platform: 'myspace', label: 'Part 1', status: 'published' },
+        { platform: 'instagram', label: 'Part 1', status: 'published', url: 'https://www.youtube.com/watch?v=abc' },
+        { platform: 'youtube', label: 'Full', status: 'live', url: 'javascript:alert(1)' },
       ],
     },
   ];
@@ -322,4 +322,28 @@ test('release variants are checked: known platform, unique label per day, matchi
   assert.ok(errors.some((e) => e.includes('platform must be one of')));
   assert.ok(errors.some((e) => e.includes('must be a instagram address')));
   assert.ok(errors.some((e) => e.includes('url must be a full https:// address')));
+  assert.ok(errors.some((e) => e.includes('status must be "planned" or "published"')));
+});
+
+test('confirming later parts or platform versions never advances the Hollowing again', () => {
+  const data = load();
+  const day1 = data.story.storyDays[0];
+  const before = deriveKingdom(data).storyDaysRemaining;
+  assert.equal(before, 29);
+  for (const r of day1.releases ?? []) {
+    r.status = 'published';
+    assert.deepEqual(errorsFor(data), []);
+    assert.equal(deriveKingdom(data).storyDaysRemaining, 29, `${r.platform} ${r.label} published`);
+  }
+  day1.releases?.push({ platform: 'youtube', label: 'Day 1 (re-upload)', status: 'published' });
+  assert.equal(deriveKingdom(data).storyDaysRemaining, 29, 'an extra version of Day 1 is still Day 1');
+});
+
+test('planned releases are never counted as published, and the build warns until one is confirmed', () => {
+  const data = load();
+  const { warnings } = validateKingdom(data, TODAY);
+  const confirmed = data.story.storyDays[0].releases?.filter((r) => r.status === 'published') ?? [];
+  if (confirmed.length === 0) assert.ok(warnings.some((w) => w.includes('none of its releases is confirmed')));
+  data.story.storyDays[0].releases![0].status = 'published';
+  assert.ok(!validateKingdom(data, TODAY).warnings.some((w) => w.includes('none of its releases')));
 });
