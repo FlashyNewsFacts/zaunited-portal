@@ -1,0 +1,267 @@
+---
+import FactionCrest from './FactionCrest.astro';
+import PlatformIcon from './PlatformIcon.astro';
+import { platformById } from '../lib/site.ts';
+import { formatVerification, type KingdomData } from '../lib/kingdom.ts';
+import type { Realm } from '../lib/realm.ts';
+
+interface Props {
+  data: KingdomData;
+  realm: Realm;
+}
+
+const { data, realm } = Astro.props;
+const number = new Intl.NumberFormat('en-GB');
+const shortName = (name: string) => name.replace(/^The /, 'the ');
+---
+
+<section class="section factions" id="factions" aria-labelledby="factions-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Three platforms. Three factions. One kingdom.</p>
+      <h2 class="section-title" id="factions-title">The Three Factions of Zaun</h2>
+      <p class="section-lead">
+        Every Zaunite stands with the faction of the platform they follow. Genuine petitions from each faction can
+        shape what King Mesmer builds next.
+      </p>
+    </div>
+
+    <div class="faction-grid">
+      {
+        realm.factions.map((f) => {
+          const platform = platformById(f.platform);
+          const record = data.population[f.platform];
+          return (
+            <article class={`faction card faction--${f.crest} reveal`} aria-labelledby={`faction-${f.crest}`}>
+              <header class="faction-head">
+                <FactionCrest crest={f.crest} size={56} />
+                <div class="faction-titles">
+                  <p class="faction-platform">
+                    <PlatformIcon id={f.platform} size={16} />
+                    {platform.name}
+                  </p>
+                  <h3 class="faction-name" id={`faction-${f.crest}`}>
+                    {f.name}
+                  </h3>
+                  <p class="faction-heraldry">{f.heraldry}</p>
+                </div>
+              </header>
+
+              <p class="faction-identity">{f.identity}</p>
+
+              <p class="faction-pop">
+                {record.count === null ? (
+                  'Population awaiting verification'
+                ) : (
+                  <>
+                    <strong>{number.format(record.count)}</strong>{' '}
+                    {record.count === 1 ? platform.metricSingular : platform.metric}
+                    {record.verifiedAt && (
+                      <span class="faction-verified">
+                        {' '}
+                        · verified{' '}
+                        <time datetime={record.verifiedAt}>{formatVerification(record.verifiedAt)}</time>
+                      </span>
+                    )}
+                  </>
+                )}
+              </p>
+
+              {f.petition ? (
+                <div class="faction-block">
+                  <p class="faction-label">First petition</p>
+                  <blockquote class="faction-quote">
+                    <p>“{f.petition.text}”</p>
+                    <cite>{f.petition.author}</cite>
+                  </blockquote>
+                </div>
+              ) : (
+                <div class="faction-block">
+                  <p class="faction-label">Petitions</p>
+                  <p class="faction-invite">{f.invitation}</p>
+                </div>
+              )}
+
+              {f.achievement ? (
+                <div class="faction-block">
+                  <p class="faction-label">Story Day {f.achievement.day} achievement</p>
+                  <ul class="faction-points" role="list">
+                    {f.achievement.points.map((p) => (
+                      <li>{p}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div class="faction-block">
+                  <p class="faction-label">Story progress</p>
+                  <p class="faction-invite">Awaiting the Court's first petition.</p>
+                </div>
+              )}
+
+              <a
+                class="btn btn--ghost faction-join"
+                href={platform.profileUrl}
+                rel="noopener"
+                aria-label={`Join ${shortName(f.name)} on ${platform.name} (${platform.handle})`}
+              >
+                Join on {platform.name}
+              </a>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faction-grid {
+    display: grid;
+    gap: 16px;
+    max-width: 64rem;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 900px) {
+    .faction-grid {
+      grid-template-columns: repeat(3, 1fr);
+      align-items: start;
+    }
+  }
+
+  .faction {
+    --accent: var(--gold);
+    padding: 20px;
+    display: grid;
+    gap: 14px;
+    border-top: 3px solid var(--accent);
+  }
+
+  .faction--ember {
+    --accent: var(--crimson-text);
+    background: linear-gradient(180deg, rgba(122, 21, 41, 0.28), var(--surface) 45%);
+  }
+
+  .faction--stonewright {
+    --accent: #b9b9c6;
+    background: linear-gradient(180deg, rgba(92, 92, 105, 0.32), var(--surface) 45%);
+  }
+
+  .faction--moonveil {
+    --accent: #a78bfa;
+    background: linear-gradient(180deg, rgba(27, 35, 80, 0.55), var(--surface) 45%);
+  }
+
+  .faction-head {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .faction-head :global(.crest-svg) {
+    flex: none;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5));
+  }
+
+  .faction-titles {
+    display: grid;
+    gap: 2px;
+  }
+
+  .faction-platform {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    --icon-cutout: #1c1338;
+  }
+
+  .faction-name {
+    font-size: 1.25rem;
+    color: var(--text);
+  }
+
+  .faction-heraldry {
+    font-size: 0.85rem;
+    color: var(--text-faint);
+    font-style: italic;
+  }
+
+  .faction-identity {
+    color: var(--text-muted);
+  }
+
+  .faction-pop {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  .faction-pop strong {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .faction-verified {
+    font-size: 0.85rem;
+    color: var(--text-faint);
+  }
+
+  .faction-block {
+    display: grid;
+    gap: 6px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .faction-label {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .faction-quote {
+    margin: 0;
+    padding-left: 12px;
+    border-left: 2px solid var(--accent);
+  }
+
+  .faction-quote p {
+    font-style: italic;
+    color: var(--text);
+  }
+
+  .faction-quote cite {
+    font-style: normal;
+    font-size: 0.85rem;
+    color: var(--text-faint);
+  }
+
+  .faction-points {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 4px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  .faction-invite {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  .faction-join {
+    justify-self: start;
+    min-height: 46px;
+    font-size: 0.82rem;
+  }
+</style>

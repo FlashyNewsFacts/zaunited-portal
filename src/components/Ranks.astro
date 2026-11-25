@@ -1,0 +1,187 @@
+---
+/**
+ * The Royal Hierarchy and open community proposals. Story only: no accounts,
+ * payments, automatic promotions or voting. Nobody has been promoted yet.
+ */
+import type { Realm } from '../lib/realm.ts';
+
+interface Props {
+  realm: Realm;
+}
+
+const { realm } = Astro.props;
+---
+
+<section class="section ranks" id="ranks" aria-labelledby="ranks-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">The Royal Hierarchy</p>
+      <h2 class="section-title" id="ranks-title">Rise Through the Ranks of Zaun</h2>
+      <p class="section-lead">
+        Worthy, approved contributions may one day help Zaunites rise through these story ranks.
+      </p>
+    </div>
+
+    <ol class="ladder reveal" aria-label="Ranks of Zaun, from first to highest">
+      {
+        realm.ranks.map((rank, i) => (
+          <li class="rung">
+            <span class="rung-number" aria-hidden="true">
+              {i + 1}
+            </span>
+            <span class="rung-name">{rank}</span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="ranks-note card reveal">
+      <span class="badge badge--muted">Advancement rules: coming soon</span>
+      <p>
+        <strong>No Zaunite has been promoted yet.</strong> Ranks are part of the story: there are no accounts,
+        payments, automatic promotions or votes.
+      </p>
+    </div>
+
+    <div class="proposals reveal">
+      <h3 class="proposals-title">Open proposals for the kingdom</h3>
+      <p class="proposals-lead">
+        Possible future developments. Nothing has been decided, and only genuine community comments can
+        influence future approved story developments.
+      </p>
+      <ul class="proposal-list" role="list">
+        {
+          realm.proposals.map((p) => (
+            <li class="proposal card">
+              <span class="badge">Open proposal</span>
+              <span class="proposal-title">{p.title}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="proposals-lead">Tell us what you think in the comments on our latest Story Day episode.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ladder {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 64rem;
+    display: grid;
+    gap: 10px;
+    counter-reset: rung;
+  }
+
+  @media (min-width: 760px) {
+    .ladder {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  .rung {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-soft);
+    background: var(--surface);
+  }
+
+  @media (min-width: 760px) {
+    .rung {
+      flex-direction: column;
+      text-align: center;
+      gap: 8px;
+    }
+  }
+
+  .rung:last-child {
+    border-color: var(--border);
+    background: linear-gradient(135deg, rgba(240, 200, 106, 0.16), var(--surface));
+  }
+
+  .rung-number {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .rung-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .ranks-note {
+    max-width: 40rem;
+    margin: 20px auto 0;
+    padding: 16px 18px;
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+    color: var(--text-muted);
+  }
+
+  .ranks-note strong {
+    color: var(--text);
+  }
+
+  .proposals {
+    max-width: 52rem;
+    margin: clamp(36px, 6vw, 56px) auto 0;
+    display: grid;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .proposals-title {
+    font-size: 1.35rem;
+    color: var(--gold);
+  }
+
+  .proposals-lead {
+    color: var(--text-muted);
+    max-width: 36rem;
+    margin: 0 auto;
+  }
+
+  .proposal-list {
+    list-style: none;
+    margin: 4px 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  @media (min-width: 760px) {
+    .proposal-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .proposal {
+    padding: 16px;
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+    border-style: dashed;
+  }
+
+  .proposal-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+  }
+</style>

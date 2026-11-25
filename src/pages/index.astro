@@ -7,9 +7,13 @@ import Milestones from '../components/Milestones.astro';
 import Hollowing from '../components/Hollowing.astro';
 import Watch from '../components/Watch.astro';
 import ComingSoon from '../components/ComingSoon.astro';
+import Factions from '../components/Factions.astro';
+import Ranks from '../components/Ranks.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import rawKingdom from '../../data/kingdom.json';
+import rawRealm from '../../data/realm.json';
 import { deriveKingdom, validateKingdom, type KingdomData } from '../lib/kingdom.ts';
+import { validateRealm, type Realm } from '../lib/realm.ts';
 
 // Refuse to build with bad records, so the live site keeps its last good version.
 const { errors } = validateKingdom(rawKingdom);
@@ -19,15 +23,23 @@ if (errors.length > 0) {
 
 const data = rawKingdom as unknown as KingdomData;
 const view = deriveKingdom(data);
+
+const realmErrors = validateRealm(rawRealm, data);
+if (realmErrors.length > 0) {
+  throw new Error(`data/realm.json is invalid:\n- ${realmErrors.join('\n- ')}`);
+}
+const realm = rawRealm as unknown as Realm;
 ---
 
 <Base>
   <Hero />
   <main id="main">
     <Population data={data} view={view} />
+    <Factions data={data} realm={realm} />
     <JoinRealm />
     <Milestones view={view} />
     <Hollowing data={data} view={view} />
+    <Ranks realm={realm} />
     <Watch />
     <ComingSoon />
   </main>

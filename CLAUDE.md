@@ -24,7 +24,8 @@ Public, mobile-first fantasy kingdom site for ZAUNITED (Astro, static output).
 - `npm run dev`: local dev server
 
 ## Layout
-- `data/kingdom.json`: records; `src/lib/kingdom.ts`: validation + derived values (pure, shared by tests/script/page)
+- `data/kingdom.json`: records; `src/lib/kingdom.ts`: validation + derived values (pure, shared by tests/script/page). Story days are recorded once each; platform cuts go in `releases` and never add days.
+- `data/realm.json` + `src/lib/realm.ts`: the Three Factions (no follower counts: they come from the census), the six approved ranks (nobody promoted), open proposals (no votes/winners). Faction achievements must reference a recorded story day.
 - `src/components/*.astro`: page sections; `src/styles/global.css`: design tokens
 - `src/lib/census.ts` (pure census logic) + `scripts/census.ts` (I/O) + `.github/workflows/census.yml` (iPad form; secret `YOUTUBE_API_KEY`)
 - `docs/CENSUS.md` and `docs/UPDATING-THE-KINGDOM.md`: owner's iPad guides (keep in sync with validation rules)

@@ -1,6 +1,6 @@
 ---
 import { formatDate, type KingdomData, type KingdomView } from '../lib/kingdom.ts';
-import { platformById } from '../lib/site.ts';
+import { PLATFORMS, platformById } from '../lib/site.ts';
 import { Picture } from 'astro:assets';
 // Official artwork, approved for this position (crop/resize only, never altered).
 // The countdown itself stays as live text below the image.
@@ -90,6 +90,37 @@ const pips = Array.from({ length: total }, (_, i) => i + 1);
               <p class="entry-text">
                 Published <time datetime={d.publishedOn}>{formatDate(d.publishedOn)}</time>
               </p>
+              {d.releases && d.releases.length > 0 && (
+                <div class="entry-releases">
+                  <p class="entry-releases-title">
+                    One story day, {d.releases.length} {d.releases.length === 1 ? 'release' : 'releases'}:
+                  </p>
+                  <ul role="list">
+                    {PLATFORMS.filter((p) => d.releases?.some((r) => r.platform === p.id)).map((p) => (
+                      <li>
+                        <a href={p.videosUrl} rel="noopener">
+                          {p.name}
+                        </a>
+                        {': '}
+                        {d.releases
+                          ?.filter((r) => r.platform === p.id)
+                          .map((r, i) => (
+                            <>
+                              {i > 0 && ', '}
+                              {r.url ? (
+                                <a href={r.url} rel="noopener">
+                                  {r.label}
+                                </a>
+                              ) : (
+                                r.label
+                              )}
+                            </>
+                          ))}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               {d.links && Object.keys(d.links).length > 0 && (
                 <p class="entry-links">
                   {Object.entries(d.links).map(([id, url]) => (
@@ -310,6 +341,29 @@ const pips = Array.from({ length: total }, (_, i) => i + 1);
   .entry-text {
     color: var(--text-muted);
     font-size: 0.95rem;
+  }
+
+  .entry-releases {
+    display: grid;
+    gap: 4px;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+  }
+
+  .entry-releases-title {
+    color: var(--text);
+  }
+
+  .entry-releases ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 2px;
+  }
+
+  .entry-releases a {
+    display: inline-block;
+    padding-block: 4px;
   }
 
   .entry-links {
