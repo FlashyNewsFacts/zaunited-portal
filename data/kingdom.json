@@ -73,27 +73,27 @@
           {
             "platform": "youtube",
             "label": "Day 1 (combined episode)",
-            "status": "planned"
+            "status": "published"
           },
           {
             "platform": "tiktok",
             "label": "Part 1",
-            "status": "planned"
+            "status": "published"
           },
           {
             "platform": "tiktok",
             "label": "Part 2",
-            "status": "planned"
+            "status": "published"
           },
           {
             "platform": "instagram",
             "label": "Part 1",
-            "status": "planned"
+            "status": "published"
           },
           {
             "platform": "instagram",
             "label": "Part 2",
-            "status": "planned"
+            "status": "published"
           }
         ]
       }
