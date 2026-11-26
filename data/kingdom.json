@@ -3,19 +3,19 @@
   "population": {
     "youtube": {
       "count": 7,
-      "verifiedAt": "2026-11-25",
+      "verifiedAt": "2026-11-26",
       "source": "YouTube Studio",
       "method": "manual"
     },
     "tiktok": {
       "count": 3,
-      "verifiedAt": "2026-11-25",
+      "verifiedAt": "2026-11-26",
       "source": "TikTok profile",
       "method": "manual"
     },
     "instagram": {
-      "count": 2,
-      "verifiedAt": "2026-11-25",
+      "count": 6,
+      "verifiedAt": "2026-11-26",
       "source": "Instagram profile",
       "method": "manual"
     }
