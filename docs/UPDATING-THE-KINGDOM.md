@@ -114,33 +114,51 @@ episode that has **already been published**. Nothing changes at midnight.
 - Only a **verified, officially published** story-day episode advances the countdown.
 - `storyDays` starts empty: `"storyDays": []` → **30 story days remain**.
 
-To record Day 1, change `"storyDays": []` to:
+Each story day is recorded **once**, however many platforms or parts it was
+released as. Day 1 looks like this:
 
 ```json
 "storyDays": [
   {
     "day": 1,
-    "title": "Title of the episode",
-    "publishedOn": "2026-11-30",
-    "links": {
-      "youtube": "https://www.youtube.com/watch?v=..."
-    }
+    "title": "Season 1, Story Day 1",
+    "publishedOn": "2026-11-25",
+    "releases": [
+      { "platform": "youtube", "label": "Day 1 (combined episode)", "status": "published" },
+      { "platform": "tiktok", "label": "Part 1", "status": "published" },
+      { "platform": "tiktok", "label": "Part 2", "status": "planned" },
+      { "platform": "instagram", "label": "Part 1", "status": "planned" },
+      { "platform": "instagram", "label": "Part 2", "status": "planned" }
+    ]
   }
 ]
 ```
+
+`releases` lists every cut of that day: these are **distribution variants of
+the same day**, so five releases still move the countdown by exactly one day.
+You can add a video link to any release, e.g.
+`{ "platform": "tiktok", "label": "Part 1", "status": "published", "url": "https://www.tiktok.com/@zaunited_/video/…" }`.
+
+Each release has a **status**: `"planned"` until you have confirmed it is live, then
+`"published"`. The site lists published and planned versions separately, and
+changing a status never moves the countdown.
 
 For the next day, add another block after it (with a comma between):
 
 ```json
   {
     "day": 2,
-    "title": "Title of the next episode",
-    "publishedOn": "2026-12-01"
+    "title": "Season 1, Story Day 2",
+    "publishedOn": "2026-11-26",
+    "releases": [
+      { "platform": "youtube", "label": "Day 2 (combined episode)", "status": "published" }
+    ]
   }
 ```
 
 Rules the check enforces:
-- Days must go 1, 2, 3… in order with no gaps.
+- Days must go 1, 2, 3… in order with no gaps. Recording a day twice is rejected.
+- A release is listed once per day, links must point to that platform, and the same video can't belong to two days.
 - `publishedOn` can't be in the future and can't be earlier than the day before.
 - `links` is optional. It can include `youtube`, `tiktok` and `instagram`, each a full `https://` address.
 

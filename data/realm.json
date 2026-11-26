@@ -1,0 +1,61 @@
+{
+  "_readme": "The Three Factions, the Royal Hierarchy and open community proposals. Follower counts are NOT stored here: they come from the census in data/kingdom.json. Only genuine, approved community petitions belong here. Never add invented votes, winners, rankings or promotions.",
+  "factions": [
+    {
+      "platform": "youtube",
+      "name": "The Order of the Ember",
+      "crest": "ember",
+      "heraldry": "Crimson and gold, bearing a flame",
+      "identity": "Dragonkeepers and keepers of ancient magic.",
+      "petition": {
+        "author": "@AkhiFR",
+        "text": "A dragon to defend thy king 🐉"
+      },
+      "achievement": {
+        "day": 1,
+        "points": [
+          "King Mesmer receives a mysterious obsidian-black dragon egg, marked with glowing violet patterns.",
+          "The egg has not hatched.",
+          "Its violet glow bears a curious resemblance to the Hollowing. What that means, no one yet knows."
+        ]
+      },
+      "invitation": null
+    },
+    {
+      "platform": "tiktok",
+      "name": "The Stonewright Guild",
+      "crest": "stonewright",
+      "heraldry": "Stone-grey and gold, bearing a hammer and stone",
+      "identity": "Builders of shelter and defences.",
+      "petition": {
+        "author": "Apple.222",
+        "text": "we need a house for me and a wall to protect from animals"
+      },
+      "achievement": {
+        "day": 1,
+        "points": [
+          "Mesmer lays the foundation of a house. It is not finished yet.",
+          "He builds a knee-high defensive wall, and it stops a curious wandering boar.",
+          "This is community-requested story progress, separate from the kingdom's Village and Defences milestones."
+        ]
+      },
+      "invitation": null
+    },
+    {
+      "platform": "instagram",
+      "name": "The Moonveil Court",
+      "crest": "moonveil",
+      "heraldry": "Midnight blue, silver and violet, bearing a veiled crescent",
+      "identity": "Keepers of mystery, creativity and unrealised potential.",
+      "petition": null,
+      "achievement": null,
+      "invitation": "The Court awaits its first eligible community petition. Instagram Zaunites: comment on our posts to shape your faction's future."
+    }
+  ],
+  "ranks": ["Wanderer", "Settler", "Artisan", "Guildmaster", "Noble", "Royal Council"],
+  "proposals": [
+    { "title": "Better Defences", "status": "open" },
+    { "title": "Raise an Army", "status": "open" },
+    { "title": "Dragon Sanctuary", "status": "open" }
+  ]
+}

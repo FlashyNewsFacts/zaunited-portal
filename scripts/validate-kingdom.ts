@@ -7,7 +7,8 @@
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { validateKingdom } from '../src/lib/kingdom.ts';
+import { validateKingdom, type KingdomData } from '../src/lib/kingdom.ts';
+import { validateRealm } from '../src/lib/realm.ts';
 
 const file = fileURLToPath(new URL('../data/kingdom.json', import.meta.url));
 
@@ -32,3 +33,20 @@ if (errors.length > 0) {
 }
 
 console.log('✔ data/kingdom.json is valid.');
+
+// The factions, ranks and proposals file (data/realm.json).
+const realmFile = fileURLToPath(new URL('../data/realm.json', import.meta.url));
+let realm: unknown;
+try {
+  realm = JSON.parse(readFileSync(realmFile, 'utf8'));
+} catch (error) {
+  console.error(`✖ data/realm.json is not valid JSON: ${(error as Error).message}`);
+  process.exit(1);
+}
+const realmErrors = validateRealm(realm, raw as KingdomData);
+if (realmErrors.length > 0) {
+  console.error(`✖ data/realm.json has ${realmErrors.length} problem${realmErrors.length === 1 ? '' : 's'}:`);
+  for (const error of realmErrors) console.error(`  • ${error}`);
+  process.exit(1);
+}
+console.log('✔ data/realm.json is valid.');

@@ -38,12 +38,33 @@ export interface MilestoneRecord {
   unlockedOn: string | null;
 }
 
+/**
+ * One published cut of a story day on one platform (e.g. "TikTok, Part 2").
+ * A story day can be released as several variants; they are all the SAME day
+ * and never advance the countdown on their own.
+ */
+export interface StoryReleaseRecord {
+  platform: PlatformId;
+  label: string;
+  /** "published" only once its publication is confirmed; otherwise "planned". */
+  status: 'planned' | 'published';
+  url?: string;
+}
+
 export interface StoryDayRecord {
   day: number;
   title: string;
   publishedOn: string;
   links?: Partial<Record<PlatformId, string>>;
+  releases?: StoryReleaseRecord[];
 }
+
+/** Hosts a release link may point to, per platform. */
+const PLATFORM_HOSTS: Record<PlatformId, string[]> = {
+  youtube: ['www.youtube.com', 'youtube.com', 'm.youtube.com', 'youtu.be'],
+  tiktok: ['www.tiktok.com', 'tiktok.com', 'vm.tiktok.com'],
+  instagram: ['www.instagram.com', 'instagram.com'],
+};
 
 export interface KingdomData {
   population: Record<PlatformId, PlatformRecord>;
@@ -303,6 +324,7 @@ export function validateKingdom(raw: unknown, today: Date = new Date()): Validat
       errors.push('story.storyDays must be a list (it starts empty: []).');
     } else {
       let previousDate: string | null = null;
+      const seenReleaseUrls = new Map<string, number>();
       days.forEach((d: unknown, index) => {
         const where = `story.storyDays[${index}]`;
         if (!isObject(d)) {
@@ -341,6 +363,53 @@ export function validateKingdom(raw: unknown, today: Date = new Date()): Validat
               } else if (!isHttpsUrl(url)) {
                 errors.push(`${where}: links.${key} must be a full https:// address.`);
               }
+            }
+          }
+        }
+        if (d.releases !== undefined) {
+          if (!Array.isArray(d.releases) || d.releases.length === 0) {
+            errors.push(`${where}: releases must be a list of { "platform": ..., "label": ... } entries (or left out).`);
+          } else {
+            const seenLabels = new Set<string>();
+            d.releases.forEach((r: unknown, ri) => {
+              const rw = `${where}.releases[${ri}]`;
+              if (!isObject(r)) {
+                errors.push(`${rw} is not an object.`);
+                return;
+              }
+              const platform = r.platform;
+              if (!(PLATFORM_IDS as readonly unknown[]).includes(platform)) {
+                errors.push(`${rw}: platform must be one of ${PLATFORM_IDS.join(', ')}.`);
+                return;
+              }
+              if (!isNonEmptyText(r.label, 60)) errors.push(`${rw}: label is required (up to 60 characters).`);
+              if (r.status !== 'planned' && r.status !== 'published') {
+                errors.push(`${rw}: status must be "planned" or "published" (only once the release is confirmed live).`);
+              }
+              const key = `${platform}|${String(r.label).trim().toLowerCase()}`;
+              if (seenLabels.has(key)) errors.push(`${rw}: "${String(r.label)}" on ${platform} is listed twice for this day.`);
+              seenLabels.add(key);
+              if (r.url !== undefined) {
+                if (!isHttpsUrl(r.url)) {
+                  errors.push(`${rw}: url must be a full https:// address.`);
+                } else {
+                  const host = new URL(r.url as string).hostname;
+                  if (!PLATFORM_HOSTS[platform as PlatformId].includes(host)) {
+                    errors.push(`${rw}: url must be a ${platform} address (found ${host}).`);
+                  }
+                  const earlier = seenReleaseUrls.get(r.url as string);
+                  if (earlier !== undefined) {
+                    errors.push(`${rw}: this video is already recorded for Story Day ${earlier}. A release belongs to one story day only.`);
+                  } else if (typeof d.day === 'number') {
+                    seenReleaseUrls.set(r.url as string, d.day);
+                  }
+                }
+              }
+            });
+            if (!d.releases.some((r: unknown) => isObject(r) && r.status === 'published')) {
+              warnings.push(
+                `${where}: none of its releases is confirmed "published" yet. Confirm the story day is live before merging.`,
+              )
             }
           }
         }
@@ -404,7 +473,8 @@ export function deriveKingdom(data: KingdomData): KingdomView {
     ? Math.min(100, Math.max(0, Math.floor((combined / nextMilestone.population) * 100)))
     : 100;
 
-  const storyDaysPublished = data.story.storyDays.length;
+  // Count distinct story days: release variants of one day never add extra days.
+  const storyDaysPublished = new Set(data.story.storyDays.map((d) => d.day)).size;
   const storyDaysRemaining = Math.max(0, data.story.hollowingTotalDays - storyDaysPublished);
 
   return {

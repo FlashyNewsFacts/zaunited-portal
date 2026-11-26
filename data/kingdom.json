@@ -3,19 +3,19 @@
   "population": {
     "youtube": {
       "count": 7,
-      "verifiedAt": "2026-11-24",
-      "source": "YouTube Studio / Metricool",
+      "verifiedAt": "2026-11-25",
+      "source": "YouTube Studio",
       "method": "manual"
     },
     "tiktok": {
       "count": 3,
-      "verifiedAt": "2026-11-24",
+      "verifiedAt": "2026-11-25",
       "source": "TikTok profile",
       "method": "manual"
     },
     "instagram": {
-      "count": 1,
-      "verifiedAt": "2026-11-24",
+      "count": 2,
+      "verifiedAt": "2026-11-25",
       "source": "Instagram profile",
       "method": "manual"
     }
@@ -64,6 +64,39 @@
         "summary": "Preserved exactly as it was released. It does not advance the Hollowing countdown."
       }
     ],
-    "storyDays": []
+    "storyDays": [
+      {
+        "day": 1,
+        "title": "Season 1, Story Day 1",
+        "publishedOn": "2026-11-25",
+        "releases": [
+          {
+            "platform": "youtube",
+            "label": "Day 1 (combined episode)",
+            "status": "published"
+          },
+          {
+            "platform": "tiktok",
+            "label": "Part 1",
+            "status": "published"
+          },
+          {
+            "platform": "tiktok",
+            "label": "Part 2",
+            "status": "published"
+          },
+          {
+            "platform": "instagram",
+            "label": "Part 1",
+            "status": "published"
+          },
+          {
+            "platform": "instagram",
+            "label": "Part 2",
+            "status": "published"
+          }
+        ]
+      }
+    ]
   }
 }
